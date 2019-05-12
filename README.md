@@ -2,9 +2,29 @@
 
 `High Power Rocketry - Flight Hardware`
 
-## DL1-Pima
+## DL-1 Pima
 
-### System Requirements
+### Purpose
+
+Flight computer to serve needs of a small (L1-L2) HPR model. Intended as a Stratologger replacement with additional DAQ capabilities. Designed around a Raspberry Pi Zero.
+
+### Features
+
+| Control            | Data Acquisition | Telemetry | Misc.  |
+|--------------------|------------------|-----------|--------|
+| Main deploy pyro   | 9DOF IMU         | GPS       | Buzzer |
+| Drogue deploy pyro | GPS              |           |        |
+|                    | Pressure         |           |        |
+|                    | Temperature      |           |        |
+|                    | Humidity         |           |        |
+
+### Hardware
+
+< >
+
+### Software
+
+< >
 
 ## Project Index
 
