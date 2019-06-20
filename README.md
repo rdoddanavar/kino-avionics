@@ -6,9 +6,7 @@
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-hardware.svg)
 
-## FS-1 Kino 
-
-![](https://img.shields.io/static/v1.svg?label=status&message=initial%20dev&color=red&style=for-the-badge)
+## FS-1 Kino ![](https://img.shields.io/static/v1.svg?label=status&message=initial%20dev&color=red&style=for-the-badge)
 
 ### Purpose
 
@@ -24,9 +22,7 @@ Flight computer to serve needs of a dual-deploy HPR model. Intended as a [Strato
 |                    | Temperature      |           |        |
 |                    | Humidity         |           |        |
 
-## GS-1 Gila
-
-![](https://img.shields.io/static/v1.svg?label=status&message=N/A&color=black&style=for-the-badge)
+## GS-1 Gila ![](https://img.shields.io/static/v1.svg?label=status&message=N/A&color=black&style=for-the-badge)
 
 ### Purpose
 
