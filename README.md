@@ -1,12 +1,18 @@
 # hpr-hardware
 
-`High Power Rocketry - Flight Hardware`
+`High Power Rocketry - Electronic Hardware`
 
-## DL-1 Pima
+![](https://img.shields.io/badge/EDA-EAGLE-lightgrey.svg)
+![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
+![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-hardware.svg)
+
+## FS-1 Kino 
+
+![](https://img.shields.io/static/v1.svg?label=status&message=initial%20dev&color=red&style=for-the-badge)
 
 ### Purpose
 
-Flight computer to serve needs of a small (L1-L2) HPR model. Intended as a Stratologger replacement with additional DAQ capabilities. Designed around a Raspberry Pi Zero.
+Flight computer to serve needs of a dual-deploy HPR model. Intended as a [Stratologger](http://www.perfectflite.com/SLCF.html) replacement with additional DAQ capabilities. Designed around a Raspberry Pi Zero.
 
 ### Features
 
@@ -18,11 +24,15 @@ Flight computer to serve needs of a small (L1-L2) HPR model. Intended as a Strat
 |                    | Temperature      |           |        |
 |                    | Humidity         |           |        |
 
-### Hardware
+## GS-1 Gila
 
-< >
+![](https://img.shields.io/static/v1.svg?label=status&message=N/A&color=black&style=for-the-badge)
 
-### Software
+### Purpose
+
+Ground station to provide remote launch and weather logging capabilities.
+
+### Features
 
 < >
 
@@ -34,19 +44,14 @@ Flight computer to serve needs of a small (L1-L2) HPR model. Intended as a Strat
 
 ```
 .
-├── dl1_pima
-│   ├── cam
-│   │   └── placeholder
-│   ├── doc
-│   │   └── dl1_materials.ods
-│   ├── lbr
-│   │   ├── raspberrypi.lbr
-│   │   └── rpi-zero.lbr
-│   ├── dl1_pima.s#1
-│   ├── dl1_pima.sch
-│   └── dl1_pima_snap.scr
+├── fs1_kino/
+│   ├── cam/
+│   ├── doc/
+│   ├── lbr/
+│   └── fs1_kino.sch
+├── gs1_gila/
 ├── README.md
-└── update_index.sh
+└── update_index.sh*
 
-4 directories, 9 files
+5 directories, 3 files
 ```
