@@ -1,6 +1,6 @@
 # hpr-hardware
 
-`High Power Rocketry - Electronic Hardware`
+> High Power Rocketry - Electronic Hardware
 
 ![](https://img.shields.io/badge/EDA-EAGLE-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
