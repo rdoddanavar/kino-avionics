@@ -30,14 +30,13 @@ Flight computer to serve needs of a dual-deploy HPR model. Intended as a [Strato
 
 ```
 .
-├── fs1_kino/
+├── kino/
 │   ├── cam/
 │   ├── doc/
-│   ├── lbr/
-│   └── fs1_kino.sch
-├── gs1_gila/
-├── README.md
-└── update_index.sh*
+│   └── materials.gdsheet
+├── license
+├── readme.md
+└── update_index.sh
 
-5 directories, 3 files
+3 directories, 4 files
 ```
