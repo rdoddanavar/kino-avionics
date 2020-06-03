@@ -1,4 +1,4 @@
-# hpr-hardware
+# kino-avionics
 
 > High Power Rocketry - Electronic Hardware
 
@@ -6,27 +6,23 @@
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-hardware.svg)
 
-## Kino
+Flight computer to serve data acquisition & tracking needs of a dual-deploy HPR model. Designed around a Raspberry Pi Zero.
 
-### Purpose
-
-Flight computer to serve needs of a dual-deploy HPR model. Intended as a [Stratologger](http://www.perfectflite.com/SLCF.html) replacement with additional DAQ capabilities. Designed around a Raspberry Pi Zero.
-
-### Features
+## Overview
 
 | Control            | Data Acquisition | Telemetry | Misc.  |
 |--------------------|------------------|-----------|--------|
-| Main deploy pyro   | 9DOF IMU         | GPS       | Buzzer |
-| Drogue deploy pyro | GPS              |           |        |
+| < >                | 9DOF IMU         | GPS       | Buzzer |
+| < >                | GPS              |           |        |
 |                    | Pressure         |           |        |
 |                    | Temperature      |           |        |
 |                    | Humidity         |           |        |
 
 ## Project Index
 
- - `./*/cam/` - All CAM files necessary for board fabrication  
- - `./*/doc/` - Supporting documents & references 
- - `./*/lbr/` - EAGLE additional libraries 
+ - `cam/` - All CAM files necessary for board fabrication  
+ - `doc/` - Supporting documents & references 
+ - `lbr/` - EAGLE additional libraries 
 
 ```
 .
