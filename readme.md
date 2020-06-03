@@ -30,13 +30,14 @@ Flight computer to serve needs of a dual-deploy HPR model. Intended as a [Strato
 
 ```
 .
-├── kino/
-│   ├── cam/
-│   ├── doc/
-│   └── materials.gdsheet
+├── cam/
+│   └── placeholder
+├── doc/
+│   └── honeywell-sensing-trustability-ssc-series-standard-740340.pdf
 ├── license
+├── materials.gdsheet
 ├── readme.md
 └── update_index.sh
 
-3 directories, 4 files
+2 directories, 6 files
 ```
