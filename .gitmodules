@@ -1,0 +1,3 @@
+[submodule "software/kino_rpi/pigpio"]
+	path = software/kino_rpi/pigpio
+	url = https://github.com/joan2937/pigpio.git
