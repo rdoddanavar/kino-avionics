@@ -2,38 +2,45 @@
 
 > High Power Rocketry - Electronic Hardware
 
-![](https://img.shields.io/badge/EDA-EAGLE-lightgrey.svg)
+![](https://img.shields.io/badge/EDA-KiCAD-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-hardware.svg)
 
-Flight computer to serve data acquisition & tracking needs of a dual-deploy HPR model. Designed around a Raspberry Pi Zero.
+Flight computer to serve data acquisition & tracking needs of a dual-deploy high power amateur model rocket. Designed around a Raspberry Pi Zero.
 
 ## Overview
 
 | Control            | Data Acquisition | Telemetry | Misc.  |
 |--------------------|------------------|-----------|--------|
-| < >                | 9DOF IMU         | GPS       | Buzzer |
-| < >                | GPS              |           |        |
+| N/A                | 9DOF IMU         | Recovery  | Buzzer |
+|                    | GPS              | IMU/GPS   |        |
 |                    | Pressure         |           |        |
 |                    | Temperature      |           |        |
 |                    | Humidity         |           |        |
 
 ## Project Index
 
- - `cam/` - All CAM files necessary for board fabrication  
- - `doc/` - Supporting documents & references 
- - `lbr/` - EAGLE additional libraries 
+ - `cam/` - CAM files for board fabrication  
+ - `doc/` - Supporting documents, references, & datsheets 
+ - `software/`
+   - `kino_arduino/` - Arduino flight deployed on Seeeduino Xiao
+   - `kino_rpi/` - C/C++ software deployed on RPI Zero
 
 ```
 .
 ├── cam/
 │   └── placeholder
 ├── doc/
-│   └── honeywell-sensing-trustability-ssc-series-standard-740340.pdf
+│   ├── arduino_mini_pinout.png
+│   ├── honeywell-sensing-trustability-ssc-series-standard-740340.pdf
+│   ├── rpi_pinout.png
+│   └── seeeduino_xiao_pinout.jpg
+├── software/
+│   ├── kino_arduino/
+│   └── kino_rpi/
 ├── license
-├── materials.gdsheet
 ├── readme.md
 └── update_index.sh
 
-2 directories, 6 files
+5 directories, 8 files
 ```
