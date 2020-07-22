@@ -1,6 +1,6 @@
 # kino-avionics
 
-> High Power Rocketry - Electronic Hardware
+> High Power Rocketry - Avionics Hardware & Software
 
 ![](https://img.shields.io/badge/EDA-KiCAD-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
@@ -18,13 +18,24 @@ Flight computer to serve data acquisition & tracking needs of a dual-deploy high
 |                    | Temperature      |           |        |
 |                    | Humidity         |           |        |
 
-## Project Index
+## File Formats
+
+| Purpose             | Application      | Format        |
+|---------------------|------------------|---------------|
+| Spreadsheet         | LibreOffice Calc | `*.fods`      |
+| EDA                 | KiCAD            | `< >`         |
+| CAM                 | " "              | `< >`         |
+| Arduino Source      | avr-gcc          | `*.ino`,`*.h` |
+| Raspberry Pi Source | gcc              | `*.c`,`*.h`   |
+
+
+## Directory Index
 
  - `cam/` - CAM files for board fabrication  
  - `doc/` - Supporting documents, references, & datsheets 
  - `software/`
-   - `kino_arduino/` - Arduino flight deployed on Seeeduino Xiao
-   - `kino_rpi/` - C/C++ software deployed on RPI Zero
+   - `kino_arduino/` - Arduino flight software deployed on Seeeduino Xiao
+   - `kino_rpi/` - C/C++ flight software deployed on RPI Zero
 
 ```
 .
