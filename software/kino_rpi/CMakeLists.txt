@@ -28,6 +28,7 @@ project(kino-rpi DESCRIPTION "Kino Avionics - RPI Flight Software"
                  LANGUAGES C)
 
 # Build settings
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # for shared libs; delete in future if unnecessary
 
 #Examples of C pigpio programs.
@@ -42,8 +43,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON) # for shared libs; delete in future if u
 add_subdirectory(pigpio)
 
 # Build flight software
-set(SRC exec.c)
+set(SRC "./exec.c")
 #set(HEADER )
 add_executable(kino_rpi ${SRC})
-target_include_directories(kino_rpi pigpio)
-target_link_libraries(kino_rpi pigpio)
+target_include_directories(kino_rpi PUBLIC "./pigpio")
+target_link_libraries(kino_rpi PUBLIC pigpio)
