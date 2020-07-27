@@ -30,10 +30,13 @@ project(kino-rpi DESCRIPTION "Kino Avionics - RPI Flight Software"
 # Build settings
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # for shared libs; delete in future if unnecessary
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pthread")
 
-#Examples of C pigpio programs.
-#If your program is called foobar.c then build with
-#gcc -Wall -pthread -o foobar foobar.c -lpigpio -lrt
+# -pthread Adds support for multithreading with the pthreads library.
+# This option sets flags for both the preprocessor and linker.
+
+# pigpio C build example:
+# gcc -Wall -pthread -o foobar foobar.c -lpigpio -lrt
 
 #-------------------------------------------------------------------#
 
@@ -44,7 +47,6 @@ add_subdirectory(pigpio)
 
 # Build flight software
 set(SRC "./exec.c")
-#set(HEADER )
 add_executable(kino_rpi ${SRC})
 target_include_directories(kino_rpi PUBLIC "./pigpio")
-target_link_libraries(kino_rpi PUBLIC pigpio)
+target_link_libraries(kino_rpi PUBLIC pigpio rt)
