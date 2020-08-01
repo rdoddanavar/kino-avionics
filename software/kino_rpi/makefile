@@ -11,7 +11,7 @@
 # Path:
 #     kino-avionics/software/kino_rpi/makefile
 # Created:
-#     2020-07-26
+#     2020-08-01
 # Type:
 #     Makefile
 # Description:
