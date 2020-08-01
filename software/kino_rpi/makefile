@@ -34,6 +34,7 @@ CC     = gcc
 CFLAGS = -Wall -pthread 
 LIBS   = -lpigpio -lrt
 LIBDIR = ./pigpio
+INCDIR = ./pigpio
 
 # Kino RPI
 EXEC = kino-rpi
@@ -44,7 +45,7 @@ SRC  = exec.c
 all: kino
 
 kino: $(SRC) pigpio
-	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -L$(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -I$(INCDIR) -L$(LIBDIR) $(LIBS)
 
 pigpio:
 	make -C pigpio
