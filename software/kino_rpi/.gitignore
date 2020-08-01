@@ -1,0 +1,4 @@
+# Build artifacts
+kino-rpi
+*.o
+*.a

@@ -31,7 +31,7 @@
 
 # General
 CC     = gcc
-CFLAGS = -Wall -pthread 
+CFLAGS = -O3 -Wall -pthread 
 LIBS   = -lpigpio -lrt
 LIBDIR = ./pigpio
 INCDIR = ./pigpio
@@ -42,13 +42,13 @@ SRC  = exec.c
 
 ## BUILD TARGETS
 
-all: kino
-
-kino: $(SRC) pigpio
-	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -I$(INCDIR) -L$(LIBDIR) $(LIBS)
+kino: $(SRC)
+	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -I$(INCDIR) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) $(LIBS)
 
 pigpio:
 	make -C pigpio
+
+all: pigpio kino
 
 clean:
 	rm -f $(EXEC) $(SRC:.c=.o)
