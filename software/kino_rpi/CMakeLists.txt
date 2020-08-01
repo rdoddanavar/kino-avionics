@@ -43,7 +43,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pthread")
 ## BUILD SOURCE
 
 # Build libraries 
-add_subdirectory(pigpio)
+set(pigpio_DIR "./pigpio/cmake")
+find_package(pigpio CONFIG REQUIRED)
 
 # Build flight software
 set(SRC "./exec.c")
