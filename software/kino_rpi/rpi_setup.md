@@ -61,3 +61,7 @@ Host is up (0.0030s latency).
 3. Clone git submodules
    - Within submodule directory: `git submodule init && git submodule update`
 4. Setup git authentication 
+   - `git config --global user.name "<username>"`
+   - `git config --global user.email <email@email.com>`
+   - `git config credential.helper store`
+   - Enter personal access token generated on GitHub as password
