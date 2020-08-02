@@ -37,7 +37,7 @@ LIBDIR = ./pigpio
 INCDIR = ./pigpio
 
 # Kino RPI
-EXEC = kino-rpi
+EXEC = kino_rpi
 SRC  = exec.c
 
 ## BUILD TARGETS
