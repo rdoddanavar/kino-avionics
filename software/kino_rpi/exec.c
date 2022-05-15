@@ -38,7 +38,7 @@ int main(void)
         printf("pigpio initialization successful\n");
 
         unsigned int spiChan  = 0;
-        unsigned int baud     = 9600;
+        unsigned int baud     = 115200; // Min: 32000, Max: 125000000
         unsigned int spiFlags = 0;
 
         int handle = spiOpen(spiChan, baud, spiFlags);
