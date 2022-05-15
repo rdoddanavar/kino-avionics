@@ -29,8 +29,6 @@ Dependencies:
 
 int main(void)
 {
-    printf("Hello world\n");
-
     if (gpioInitialise() < 0)
     {
         printf("pigpio initialization failed\n");
@@ -39,17 +37,19 @@ int main(void)
     {
         printf("pigpio initialization successful\n");
 
-        gpioSetMode(18, PI_OUTPUT); // Set GPIO18 as output
-        float delay = 0.5;
+        unsigned int spiChan  = 0;
+        unsigned int baud     = 9600;
+        unsigned int spiFlags = 0;
 
-        for (int i = 0; i < 10; i++)
+        int handle = spiOpen(spiChan, baud, spiFlags);
+
+        if (handle >= 0)
         {
-
-            gpioWrite(18, 1); // Set GPIO18 high
-            time_sleep(delay);
-            gpioWrite(18, 0); // Set GPIO18 low
-            time_sleep(delay);
-
+            printf("SPI open successful!\n");
+        }
+        else
+        {
+            printf("SPI open failed!\n");
         }
         gpioTerminate();
     }
