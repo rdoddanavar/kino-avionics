@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "SeeeduinoXIAO_SPISlave.h"
 
-int dataOut = 0;
+volatile int dataOut = 0;
 
 void setup()
 {
@@ -29,7 +29,7 @@ void setup()
 
 void loop()
 { 
-    dataOut += 1;
+    dataOut = 5;
     Serial.println(dataOut);
     delay(500);
 }
@@ -64,7 +64,7 @@ void SERCOM0_Handler()
     {
         
         // TEST TEST TEST
-        SERCOM0->SPI.DATA.reg = dataOut;
+        SERCOM0->SPI.DATA.reg = 0x5;
         // TEST TEST TEST
         
         SERCOM0->SPI.INTFLAG.bit.TXC = 1; //clear transmit complete interrupt
