@@ -1,11 +1,20 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-//volatile byte receivedData;
+char message[] = "Hello World!";
+byte length = 12;
+volatile byte idx = 0; 
 
 ISR (SPI_STC_vect)        //Inerrrput routine function 
 {
-    SPDR = 5;
+    
+    if (idx == length)
+    {
+        idx = 0;
+    }
+
+    SPDR = message[idx++];
+
 }
 
 void setup()
@@ -20,7 +29,7 @@ void setup()
 void loop()
 { 
 
-    Serial.println(5, HEX);
-    delay(500);
+    //Serial.println("Tick");
+    //delay(500);
 
 }
