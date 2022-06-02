@@ -35,6 +35,7 @@ int main(void)
     }
     else
     {
+        
         printf("pigpio initialization successful\n");
 
         unsigned int spiChan  = 0;
@@ -44,24 +45,25 @@ int main(void)
         int handle = spiOpen(spiChan, baud, spiFlags);
 
         char buf[1];
-	const int length = 12;
-	char message[length];
+        const int length = 12;
+        char message[length];
         unsigned int count = 1;
 
         int status = 0;
 
         if (handle >= 0)
         {
+            
             printf("SPI open successful!\n");
 
             for (int i=0; i<length; i++)
             {
                 status = spiRead(handle, buf, count);
-		printf("%c", buf[0]);
+                printf("%c", buf[0]);
             }
 
-	    printf("\n");
-	    spiClose(handle);
+            printf("\n");
+            spiClose(handle);
 
         }
         else
