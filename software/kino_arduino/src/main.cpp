@@ -1,35 +1,40 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-char message[] = "Hello World!";
-byte length = 12;
-volatile byte idx = 0; 
+const unsigned int nByte = 4;
+unsigned int iByte;
 
-ISR (SPI_STC_vect)        //Inerrrput routine function 
+typedef union
+{
+    float value;
+    uint8_t bytes[nByte];
+} FloatUnion;
+
+FloatUnion time;
+
+ISR (SPI_STC_vect) // Interrput routine function 
 {
     
-    if (idx == length)
+    time.value = millis() / 1.0e3;
+    
+    for (iByte = 0; iByte < nByte; iByte++)
     {
-        idx = 0;
-    }
 
-    SPDR = message[idx++];
+        SPDR = time.bytes[iByte];
+    }
 
 }
 
 void setup()
 {
-    Serial.begin(9600);
 
     pinMode(MISO,OUTPUT);   //Sets MISO as OUTPUT
     SPCR |= _BV(SPE);       //Turn on SPI in Slave Mode
-    SPI.attachInterrupt();  //Activate SPI Interuupt 
+    SPI.attachInterrupt();  //Activate SPI Interupt
+
 }
 
 void loop()
 { 
-
-    //Serial.println("Tick");
-    //delay(500);
 
 }

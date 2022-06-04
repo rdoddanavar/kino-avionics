@@ -27,6 +27,17 @@ Dependencies:
 // Project libraries
 #include "pigpio.h"
 
+// Types
+const int nByte = 4;
+
+typedef union
+{
+    float value;
+    uint8_t bytes[nByte];
+} FloatUnion;
+
+FloatUnion time; // [s]
+
 int main(void)
 {
     if (gpioInitialise() < 0)
@@ -44,10 +55,8 @@ int main(void)
 
         int handle = spiOpen(spiChan, baud, spiFlags);
 
-        char buf[1];
-        const int length = 12;
-        char message[length];
-        unsigned int count = 1;
+        char buf[nByte];
+        unsigned int count = nByte; // Number of bytes to read
 
         int status = 0;
 
@@ -56,13 +65,20 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            for (int i=0; i<length; i++)
+            for (int iPing=0; iPing<50; iPing++)
             {
+                
                 status = spiRead(handle, buf, count);
-                printf("%c", buf[0]);
+
+                for (int iByte=0; iByte<nByte; iByte++)
+                {
+                    time.bytes[iByte] = buf[iByte];
+                }
+
+                printf("Time: %.3f\n", time.value);
+
             }
 
-            printf("\n");
             spiClose(handle);
 
         }
