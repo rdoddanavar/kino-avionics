@@ -28,7 +28,7 @@ Dependencies:
 #include "pigpio.h"
 
 // Types
-const int nByte = 4;
+#define nByte 4
 
 typedef union
 {
@@ -36,7 +36,7 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-FloatUnion time; // [s]
+FloatUnion dataTime; // [s]
 
 int main(void)
 {
@@ -56,7 +56,7 @@ int main(void)
         int handle = spiOpen(spiChan, baud, spiFlags);
 
         char buf[nByte];
-        unsigned int count = nByte; // Number of bytes to read
+        unsigned int count = 1;//nByte; // Number of bytes to read
 
         int status = 0;
 
@@ -68,14 +68,17 @@ int main(void)
             for (int iPing=0; iPing<50; iPing++)
             {
                 
-                status = spiRead(handle, buf, count);
+                buf[0] = '!';
+                spiWrite(handle, buf, count);
 
                 for (int iByte=0; iByte<nByte; iByte++)
                 {
-                    time.bytes[iByte] = buf[iByte];
+                    status = spiRead(handle, buf, count);
+                    dataTime.bytes[iByte] = buf[0];
+		            printf("Byte[%d] = %x, ", iByte, buf[0]);
                 }
 
-                printf("Time: %.3f\n", time.value);
+                printf("\nTime: %.3f\n", dataTime.value);
 
             }
 
