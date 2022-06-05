@@ -1,4 +1,4 @@
 # Build artifacts
-kino_rpi
+exec
 *.o
 *.a

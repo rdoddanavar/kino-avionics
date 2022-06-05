@@ -37,22 +37,20 @@ LIBDIR = ./pigpio
 INCDIR = ./pigpio
 
 # Kino RPI
-EXEC = kino_rpi
+EXEC = exec
 SRC  = exec.c
 
 ## BUILD TARGETS
 
-kino: $(SRC)
-	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -I$(INCDIR) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) $(LIBS)
+.PHONY: pigpio
+
+all: pigpio $(EXEC)
 
 pigpio:
 	make -C pigpio
 
-all: pigpio kino
+$(EXEC): $(SRC)
+	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -I$(INCDIR) -L$(LIBDIR) -Wl,-rpath=$(LIBDIR) $(LIBS)
 
 clean:
 	rm -f $(EXEC) $(SRC:.c=.o)
-
-all-clean:
-	rm -f $(EXEC) $(SRC:.c=.o)
-	make -C pigpio clean

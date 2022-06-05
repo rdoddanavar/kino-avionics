@@ -27,29 +27,67 @@ Dependencies:
 // Project libraries
 #include "pigpio.h"
 
+// Types
+#define nByte 4
+
+typedef union
+{
+    float value;
+    uint8_t bytes[nByte];
+} FloatUnion;
+
+FloatUnion dataTime; // [s]
+
 int main(void)
 {
-    printf("Hello world\n");
-
     if (gpioInitialise() < 0)
     {
         printf("pigpio initialization failed\n");
     }
     else
     {
+        
         printf("pigpio initialization successful\n");
 
-        gpioSetMode(18, PI_OUTPUT); // Set GPIO18 as output
-        float delay = 0.5;
+        unsigned int spiChan  = 0;
+        unsigned int baud     = 115200; // Min: 32000, Max: 125000000
+        unsigned int spiFlags = 0;
 
-        for (int i = 0; i < 10; i++)
+        int handle = spiOpen(spiChan, baud, spiFlags);
+
+        char buf[nByte];
+        unsigned int count = 1;//nByte; // Number of bytes to read
+
+        int status = 0;
+
+        if (handle >= 0)
         {
+            
+            printf("SPI open successful!\n");
 
-            gpioWrite(18, 1); // Set GPIO18 high
-            time_sleep(delay);
-            gpioWrite(18, 0); // Set GPIO18 low
-            time_sleep(delay);
+            for (int iPing=0; iPing<50; iPing++)
+            {
+                
+                buf[0] = '!';
+                spiWrite(handle, buf, count);
 
+                for (int iByte=0; iByte<nByte; iByte++)
+                {
+                    status = spiRead(handle, buf, count);
+                    dataTime.bytes[iByte] = buf[0];
+		            printf("Byte[%d] = %x, ", iByte, buf[0]);
+                }
+
+                printf("\nTime: %.3f\n", dataTime.value);
+
+            }
+
+            spiClose(handle);
+
+        }
+        else
+        {
+            printf("SPI open failed!\n");
         }
         gpioTerminate();
     }
