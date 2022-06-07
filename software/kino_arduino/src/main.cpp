@@ -11,18 +11,22 @@ typedef union
 } FloatUnion;
 
 FloatUnion dataTime;
+FloatUnion *dataOut;
 
 ISR (SPI_STC_vect) // Interrput routine function 
 {
     
-    //time.value = millis() / 1.0e3;
-    
-    if (SPDR == '!')
+    switch (SPDR)
     {
-        iByte = 0x00;
+        case 't':
+            iByte = 0x00;
+            //dataTime.value = millis() / 1.0e3;
+            dataOut = &dataTime;
+        default:
+            SPDR = dataOut->bytes[iByte++];
     }
-    
-    SPDR = dataTime.bytes[iByte++];
+
+    //SPDR = dataOut->bytes[iByte++];
 
 }
 
@@ -33,11 +37,12 @@ void setup()
     SPCR |= _BV(SPE);       //Turn on SPI in Slave Mode
     SPI.attachInterrupt();  //Activate SPI Interupt
 
-    dataTime.value = 123.45;
+    dataTime.value = 0.0;
 
 }
 
 void loop()
 { 
-
+    dataTime.value = millis() / 1.0e3;
+    delay(10);
 }
