@@ -22,7 +22,6 @@ Dependencies:
 
 // Builtin libraries
 #include <stdio.h>
-#include <stdbool.h>
 
 // Project libraries
 #include "pigpio.h"
@@ -65,24 +64,33 @@ int main(void)
             
             printf("SPI open successful!\n");
 
+            float data[50];
+
             for (int iPing=0; iPing<50; iPing++)
             {
                 
-                buf[0] = '!';
+                buf[0] = 't';
                 spiWrite(handle, buf, count);
 
                 for (int iByte=0; iByte<nByte; iByte++)
                 {
                     status = spiRead(handle, buf, count);
                     dataTime.bytes[iByte] = buf[0];
-		            printf("Byte[%d] = %x, ", iByte, buf[0]);
                 }
 
-                printf("\nTime: %.3f\n", dataTime.value);
+                data[iPing] = dataTime.value;
+                time_sleep(0.01);
 
             }
 
             spiClose(handle);
+
+            for (int iPing=0; iPing<50; iPing++)
+            {
+                
+                printf("Time (%d/%d): %.3f\n", iPing, 50, data[iPing]);
+
+            }
 
         }
         else
