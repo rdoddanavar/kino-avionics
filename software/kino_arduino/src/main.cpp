@@ -4,7 +4,11 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
-// SPI stuff
+//----------------------------------------------------------------------------//
+
+// SPI setup
+
+#define SAMPLE_TIME (100.0) // Loop delay [ms] 
 
 const unsigned int nByte = 4;
 volatile byte iByte = 0x00;
@@ -15,16 +19,27 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-FloatUnion dataTime;
 FloatUnion *dataOut;
 
-// Sensor stuff
+FloatUnion dataTime;  // [s]
+FloatUnion dataTemp;  // [deg C]
+FloatUnion dataPress; // [hPa]
+FloatUnion dataAlt;   // [m]
+FloatUnion dataHum;   // [%]
+
+//----------------------------------------------------------------------------//
+
+// BME280 setup
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 Adafruit_BME280 bme;
 
-ISR (SPI_STC_vect) // Interrput routine function 
+//----------------------------------------------------------------------------//
+
+// Interrupt routine function
+
+ISR (SPI_STC_vect)
 {
     
     switch (SPDR)
@@ -37,6 +52,8 @@ ISR (SPI_STC_vect) // Interrput routine function
     }
 
 }
+
+//----------------------------------------------------------------------------//
 
 void setup()
 {
@@ -59,27 +76,17 @@ void setup()
 
 }
 
+//----------------------------------------------------------------------------//
+
 void loop()
 { 
-    dataTime.value = millis() / 1.0e3;
+    
+    dataTime.value  = millis() / 1.0e3;
+	dataTemp.value  = bme.readTemperature();
+	dataPress.value = bme.readPressure() / 100.0f;
+	dataAlt.value   = bme.readAltitude(SEALEVELPRESSURE_HPA);
+	dataHum.value   = bme.readHumidity();
 
-	Serial.print("Temperature = ");
-	Serial.print(bme.readTemperature());
-	Serial.println("*C");
+    delay(SAMPLE_TIME);
 
-	Serial.print("Pressure = ");
-	Serial.print(bme.readPressure() / 100.0F);
-	Serial.println("hPa");
-
-	Serial.print("Approx. Altitude = ");
-	Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
-	Serial.println("m");
-
-	Serial.print("Humidity = ");
-	Serial.print(bme.readHumidity());
-	Serial.println("%");
-
-	Serial.println();
-
-    delay(1000);
 }

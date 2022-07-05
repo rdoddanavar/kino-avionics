@@ -35,7 +35,17 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-FloatUnion dataTime; // [s]
+//----------------------------------------------------------------------------//
+
+FloatUnion dataTime;  // [s]
+FloatUnion dataTemp;  // [deg C]
+FloatUnion dataPress; // [hPa]
+FloatUnion dataAlt;   // [m]
+FloatUnion dataHum;   // [%]
+
+FloatUnion *dataUnion[] = {&dataTime, &dataTemp, &dataPress, }
+
+//----------------------------------------------------------------------------//
 
 int main(void)
 {
@@ -57,6 +67,8 @@ int main(void)
         char buf[nByte];
         unsigned int count = 1;//nByte; // Number of bytes to read
 
+        char key[] = {'t', 'm', 'p', 'a', 'h'};
+
         int status = 0;
 
         if (handle >= 0)
@@ -64,9 +76,12 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            float data[50];
+            const unsigned int nCount = 50;
+            const unsigned int nVar   = 5;
 
-            for (int iPing=0; iPing<50; iPing++)
+            float data[nCount][nVar];
+
+            for (int iPing=0; iPing<nCount; iPing++)
             {
                 
                 buf[0] = 't';
@@ -79,7 +94,7 @@ int main(void)
                 }
 
                 data[iPing] = dataTime.value;
-                time_sleep(0.01);
+                time_sleep(0.1);
 
             }
 
