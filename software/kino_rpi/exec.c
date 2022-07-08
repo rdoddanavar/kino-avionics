@@ -43,7 +43,8 @@ FloatUnion dataPress; // [hPa]
 FloatUnion dataAlt;   // [m]
 FloatUnion dataHum;   // [%]
 
-FloatUnion *dataUnion[] = {&dataTime, &dataTemp, &dataPress, }
+FloatUnion *dataUnion[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
+const char  dataKey[]   = {'t', 'm', 'p', 'a', 'h'};
 
 //----------------------------------------------------------------------------//
 
@@ -65,9 +66,7 @@ int main(void)
         int handle = spiOpen(spiChan, baud, spiFlags);
 
         char buf[nByte];
-        unsigned int count = 1;//nByte; // Number of bytes to read
-
-        char key[] = {'t', 'm', 'p', 'a', 'h'};
+        unsigned int count = 1; // Number of bytes to read
 
         int status = 0;
 
@@ -77,25 +76,28 @@ int main(void)
             printf("SPI open successful!\n");
 
             const unsigned int nCount = 50;
-            const unsigned int nVar   = 5;
+            const unsigned int nData  = 5;
 
-            float data[nCount][nVar];
+            float data[nCount][nData];
 
             for (int iPing=0; iPing<nCount; iPing++)
-            {
-                
-                buf[0] = 't';
-                spiWrite(handle, buf, count);
-
-                for (int iByte=0; iByte<nByte; iByte++)
+            {  
+                for (int iData=0; iData<nData; iData++)
                 {
-                    status = spiRead(handle, buf, count);
-                    dataTime.bytes[iByte] = buf[0];
+
+                    buf[0] = dataKey[iData];
+                    spiWrite(handle, buf, count);
+
+                    for (int iByte=0; iByte<nByte; iByte++)
+                    {
+                        status = spiRead(handle, buf, count);
+                        dataUnion[iData]->bytes[iByte] = buf[0];
+                    }
+
+                    data[iPing][iData] = dataUnion[iData]->value;
+                    time_sleep(0.1);
+
                 }
-
-                data[iPing] = dataTime.value;
-                time_sleep(0.1);
-
             }
 
             spiClose(handle);
