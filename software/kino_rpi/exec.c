@@ -105,7 +105,14 @@ int main(void)
             for (int iPing=0; iPing<50; iPing++)
             {
                 
-                printf("Time (%d/%d): %.3f\n", iPing, 50, data[iPing]);
+                printf("(%d/%d): ", iPing, 50);
+                
+                for (int iData=0; iData<nData; iData++)
+                {
+                    printf("%c%.3f, ", dataKey[iData], data[iPing][iData]);
+                }
+
+                printf("\n");
 
             }
 
