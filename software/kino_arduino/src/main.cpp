@@ -8,7 +8,7 @@
 
 // SPI setup
 
-#define SAMPLE_TIME (100.0) // Loop delay [ms] 
+#define SAMPLE_TIME (10.0) // Loop delay [ms] 
 
 const unsigned int nByte = 4;
 volatile byte iByte = 0x00;
@@ -19,7 +19,7 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-FloatUnion *dataOut;
+volatile FloatUnion *dataOut = 0;
 
 FloatUnion dataTime;  // [s]
 FloatUnion dataTemp;  // [deg C]
@@ -41,12 +41,31 @@ Adafruit_BME280 bme;
 
 ISR (SPI_STC_vect)
 {
-    
-    switch (SPDR)
+
+    //Serial.println(char(SPDR));
+
+    switch (char(SPDR))
     {
         case 't':
             iByte   = 0x00;
             dataOut = &dataTime;
+            break;
+        case 'm':
+            iByte   = 0x00;
+            dataOut = &dataTemp;
+            break;
+        case 'p':
+            iByte   = 0x00;
+            dataOut = &dataPress;
+            break;
+        case 'a':
+            iByte   = 0x00;
+            dataOut = &dataAlt;
+            break;
+        case 'h':
+            iByte   = 0x00;
+            dataOut = &dataHum;
+            break;
         default:
             SPDR = dataOut->bytes[iByte++];
     }
@@ -73,6 +92,16 @@ void setup()
 		Serial.println("Could not find a valid BME280 sensor, check wiring!");
 		while (1);
 	}
+
+    //////////////////////////////////
+
+    Serial.print(millis() / 1.0e3); Serial.print(" , ");
+	Serial.print(bme.readTemperature()); Serial.print(" , ");
+	Serial.print(bme.readPressure() / 100.0f); Serial.print(" , ");
+	Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA)); Serial.print(" , ");
+	Serial.print(bme.readHumidity()); Serial.print(" , ");
+
+    //////////////////////////////////
 
 }
 
