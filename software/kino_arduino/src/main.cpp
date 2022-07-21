@@ -67,7 +67,7 @@ ISR (SPI_STC_vect)
             break;
     }
     
-    if (iData < nByte)
+    if (iByte < nByte)
     {
         SPDR = dataOut[iData]->bytes[iByte++];
     }
