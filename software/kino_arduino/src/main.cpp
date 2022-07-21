@@ -19,13 +19,17 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-volatile FloatUnion *dataOut = 0;
+//volatile FloatUnion *dataOut = 0;
+
+volatile unsigned int iData = 0;
 
 FloatUnion dataTime;  // [s]
 FloatUnion dataTemp;  // [deg C]
 FloatUnion dataPress; // [hPa]
 FloatUnion dataAlt;   // [m]
 FloatUnion dataHum;   // [%]
+
+FloatUnion *dataOut[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
 
 //----------------------------------------------------------------------------//
 
@@ -48,28 +52,33 @@ ISR (SPI_STC_vect)
     {
         case 't':
             iByte   = 0x00;
-            dataOut = &dataTime;
+            //dataOut = &dataTime;
+            iData = 0;
             break;
         case 'm':
             iByte   = 0x00;
-            dataOut = &dataTemp;
+            //dataOut = &dataTemp;
+            iData = 1;
             break;
         case 'p':
             iByte   = 0x00;
-            dataOut = &dataPress;
+            //dataOut = &dataPress;
+            iData = 2;
             break;
         case 'a':
             iByte   = 0x00;
-            dataOut = &dataAlt;
+            //dataOut = &dataAlt;
+            iData = 3;
             break;
         case 'h':
             iByte   = 0x00;
-            dataOut = &dataHum;
+            //dataOut = &dataHum;
+            iData = 4;
             break;
         default:
-            SPDR = dataOut->bytes[iByte++];
+            ;//SPDR = dataOut[iData]->bytes[iByte++];
     }
-
+    SPDR = dataOut[iData]->bytes[iByte++];
 }
 
 //----------------------------------------------------------------------------//
