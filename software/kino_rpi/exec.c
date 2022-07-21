@@ -22,7 +22,6 @@ Dependencies:
 
 // Builtin libraries
 #include <stdio.h>
-#include <stdbool.h>
 
 // Project libraries
 #include "pigpio.h"
@@ -36,7 +35,18 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-FloatUnion dataTime; // [s]
+//----------------------------------------------------------------------------//
+
+FloatUnion dataTime;  // [s]
+FloatUnion dataTemp;  // [deg C]
+FloatUnion dataPress; // [hPa]
+FloatUnion dataAlt;   // [m]
+FloatUnion dataHum;   // [%]
+
+FloatUnion *dataUnion[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
+const char  dataKey[]   = {'t', 'm', 'p', 'a', 'h'};
+
+//----------------------------------------------------------------------------//
 
 int main(void)
 {
@@ -50,13 +60,13 @@ int main(void)
         printf("pigpio initialization successful\n");
 
         unsigned int spiChan  = 0;
-        unsigned int baud     = 115200; // Min: 32000, Max: 125000000
+        unsigned int baud     = 32000; // Min: 32000, Max: 125000000
         unsigned int spiFlags = 0;
 
         int handle = spiOpen(spiChan, baud, spiFlags);
 
         char buf[nByte];
-        unsigned int count = 1;//nByte; // Number of bytes to read
+        unsigned int count = 1; // Number of bytes to read
 
         int status = 0;
 
@@ -65,24 +75,52 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            for (int iPing=0; iPing<50; iPing++)
-            {
-                
-                buf[0] = '!';
-                spiWrite(handle, buf, count);
+            const unsigned int nCount = 10;
+            const unsigned int nData  = 5;
 
-                for (int iByte=0; iByte<nByte; iByte++)
+            int iPing;
+            int iData;
+            int iByte;
+
+            float data[nCount][nData];
+
+            for (iPing=0; iPing<nCount; iPing++)
+            {  
+                for (iData=0; iData<nData; iData++)
                 {
-                    status = spiRead(handle, buf, count);
-                    dataTime.bytes[iByte] = buf[0];
-		            printf("Byte[%d] = %x, ", iByte, buf[0]);
+
+                    buf[0] = dataKey[iData];
+                    spiWrite(handle, buf, count);
+
+                    for (iByte=0; iByte<nByte; iByte++)
+                    {
+                        status = spiRead(handle, buf, count);
+                        dataUnion[iData]->bytes[iByte] = buf[0];
+                    }
+
+                    data[iPing][iData] = dataUnion[iData]->value;
+
+                    //printf("test: %c, %.2f\n", dataKey[iData], dataUnion[iData]->value);
+
                 }
-
-                printf("\nTime: %.3f\n", dataTime.value);
-
+                time_sleep(0.1);
             }
 
             spiClose(handle);
+
+            for (iPing=0; iPing<nCount; iPing++)
+            {
+                
+                printf("(%d/%d): ", iPing, nCount);
+                
+                for (iData=0; iData<nData; iData++)
+                {
+                    printf("%c%.3f, ", dataKey[iData], data[iPing][iData]);
+                }
+
+                printf("\n");
+
+            }
 
         }
         else
