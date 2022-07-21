@@ -8,10 +8,7 @@
 
 // SPI setup
 
-#define SAMPLE_TIME (10.0) // Loop delay [ms] 
-
 const unsigned int nByte = 4;
-volatile byte iByte = 0x00;
 
 typedef union
 {
@@ -19,8 +16,7 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-//volatile FloatUnion *dataOut = 0;
-
+volatile unsigned int iByte = 0;
 volatile unsigned int iData = 0;
 
 FloatUnion dataTime;  // [s]
@@ -33,10 +29,11 @@ FloatUnion *dataOut[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
 
 //----------------------------------------------------------------------------//
 
+// Sensor setup
+#define SAMPLE_TIME (10.0) // Loop delay [ms] 
+
 // BME280 setup
-
 #define SEALEVELPRESSURE_HPA (1013.25)
-
 Adafruit_BME280 bme;
 
 //----------------------------------------------------------------------------//
@@ -46,39 +43,35 @@ Adafruit_BME280 bme;
 ISR (SPI_STC_vect)
 {
 
-    //Serial.println(char(SPDR));
-
-    switch (char(SPDR))
+    switch (SPDR)
     {
-        case 't':
-            iByte   = 0x00;
-            //dataOut = &dataTime;
+        case 't': // Time
+            iByte = 0;
             iData = 0;
             break;
-        case 'm':
-            iByte   = 0x00;
-            //dataOut = &dataTemp;
+        case 'm': // Temperature
+            iByte = 0;
             iData = 1;
             break;
-        case 'p':
-            iByte   = 0x00;
-            //dataOut = &dataPress;
+        case 'p': // Pressure
+            iByte = 0;
             iData = 2;
             break;
-        case 'a':
-            iByte   = 0x00;
-            //dataOut = &dataAlt;
+        case 'a': // Altitude
+            iByte = 0;
             iData = 3;
             break;
-        case 'h':
-            iByte   = 0x00;
-            //dataOut = &dataHum;
+        case 'h': // Humidity
+            iByte = 0;
             iData = 4;
             break;
-        default:
-            ;//SPDR = dataOut[iData]->bytes[iByte++];
     }
-    SPDR = dataOut[iData]->bytes[iByte++];
+    
+    if (iData < nByte)
+    {
+        SPDR = dataOut[iData]->bytes[iByte++];
+    }
+
 }
 
 //----------------------------------------------------------------------------//
