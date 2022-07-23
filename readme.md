@@ -6,46 +6,42 @@
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-hardware.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-hardware.svg)
 
-Flight computer to serve data acquisition & tracking needs of a dual-deploy high power amateur model rocket. Designed around a Raspberry Pi Zero.
+Series of avionics systems to support data acquisition & tracking needs of a dual-deploy high power amateur model rocket.
 
 ## Overview
 
-| Control            | Data Acquisition | Telemetry | Misc.  |
-|--------------------|------------------|-----------|--------|
-| N/A                | 9DOF IMU         | Recovery  | Buzzer |
-|                    | GPS              | IMU/GPS   |        |
-|                    | Pressure         |           |        |
-|                    | Temperature      |           |        |
-|                    | Humidity         |           |        |
+### Kino 1
 
-## File Formats
+> Flight data logging board
 
-| Purpose             | Application      | Format        |
-|---------------------|------------------|---------------|
-| Spreadsheet         | LibreOffice Calc | `*.fods`      |
-| EDA                 | KiCAD            | `< >`         |
-| CAM                 | " "              | `< >`         |
-| Arduino Source      | avr-gcc          | `*.ino`,`*.h` |
-| Raspberry Pi Source | gcc              | `*.c`,`*.h`   |
+| Component                    | Purpose                                             |
+|------------------------------|-----------------------------------------------------|
+| Raspberry Pi Zero W          | Main flight computer                                |
+| Arduino Pro Mini (3.3V/8MHz) | Data acquisition                                    |
+| BME280                       | Atmoshperic sensor: temperature, pressure, humidity |
+| MPU-9250/6500                | 9-DOF IMU                                           |
+| NEO-6M                       | GPS module                                          |
 
+### Kino 2 
+
+> TBD
 
 ## Directory Index
 
- - `cam/` - CAM files for board fabrication  
- - `doc/` - Supporting documents, references, & datsheets 
+ - `doc/` - Supporting documents, references, & datsheets
+ - `hardware/`
+   - `cam/` - CAM files for board fabrication  
+   - `lib/` - KiCAD library files
  - `software/`
-   - `kino_arduino/` - Arduino flight software deployed on Seeeduino Xiao
+   - `kino_arduino/` - C++ flight software deployed on Arduino Pro Mini
    - `kino_rpi/` - C/C++ flight software deployed on RPI Zero
 
 ```
 .
-├── cam/
-│   └── placeholder
 ├── doc/
-│   ├── arduino_mini_pinout.png
-│   ├── honeywell-sensing-trustability-ssc-series-standard-740340.pdf
-│   ├── rpi_pinout.png
-│   └── seeeduino_xiao_pinout.jpg
+├── hardware/
+│   ├── cam/
+│   └── lib/
 ├── software/
 │   ├── kino_arduino/
 │   └── kino_rpi/
@@ -53,5 +49,11 @@ Flight computer to serve data acquisition & tracking needs of a dual-deploy high
 ├── readme.md
 └── update_index.sh
 
-5 directories, 8 files
+7 directories, 9 files
 ```
+
+### What's with the name?
+
+ - Eusebio Kino ([Wikipedia](https://en.wikipedia.org/wiki/Eusebio_Kino)):
+
+    > Kino ... was reportedly an expert astronomer, mathematician and cartographer, who drew the first accurate maps of Pimería Alta, the Gulf of California, and Baja California.
