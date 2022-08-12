@@ -2,15 +2,19 @@
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
-const int rxPin = 4, txPin = 3;
+const int rxPin = 9;
+const int txPin = 8;
+
 const int monitorBaud = 9600; 
-const int gpsBaud = 9600;
+const int gpsBaud     = 9600;
 
 // The TinyGPSPlus object
 TinyGPSPlus gps;
 
 // The serial connection to the GPS device
-SoftwareSerial ss(rxPin, TXPin);
+SoftwareSerial ss(rxPin, txPin);
+
+void smart_delay(unsigned long ms);
 
 void setup()
 {
