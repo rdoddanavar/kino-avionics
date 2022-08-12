@@ -18,7 +18,7 @@ Series of avionics systems to support data acquisition & tracking needs of a dua
 |------------------------------|-----------------------------------------------------|
 | Raspberry Pi Zero W          | Main flight computer                                |
 | Arduino Pro Mini (3.3V/8MHz) | Data acquisition                                    |
-| BME280                       | Atmoshperic sensor: temperature, pressure, humidity |
+| BME280                       | Atmospheric sensor: temperature, pressure, humidity |
 | MPU-9250/6500                | 9-DOF IMU                                           |
 | NEO-6M                       | GPS module                                          |
 
@@ -28,7 +28,7 @@ Series of avionics systems to support data acquisition & tracking needs of a dua
 
 ## Directory Index
 
- - `doc/` - Supporting documents, references, & datsheets
+ - `doc/` - Supporting documents, references, & datasheets
  - `hardware/`
    - `cam/` - CAM files for board fabrication  
    - `lib/` - KiCAD library files
