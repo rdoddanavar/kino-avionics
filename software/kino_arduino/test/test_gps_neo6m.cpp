@@ -19,7 +19,7 @@ void smart_delay(unsigned long ms);
 void setup()
 {
     
-    Serial.begin(115200);
+    Serial.begin(monitorBaud);
     ss.begin(gpsBaud);
 
 }
