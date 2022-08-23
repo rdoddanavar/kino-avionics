@@ -16,32 +16,29 @@ SoftwareSerial ss(rxPin, txPin);
 
 void smart_delay(unsigned long ms);
 
+String dataOut;
+
 void setup()
 {
     
     Serial.begin(monitorBaud);
     ss.begin(gpsBaud);
+    dataOut = "";
 
 }
 
 void loop()
 {
 
-    /*
-    printInt(gps.satellites.value(), gps.satellites.isValid(), 5);
-    printFloat(gps.hdop.hdop(), gps.hdop.isValid(), 6, 1);
-    printFloat(gps.location.lat(), gps.location.isValid(), 11, 6);
-    printFloat(gps.location.lng(), gps.location.isValid(), 12, 6);
-    printInt(gps.location.age(), gps.location.isValid(), 5);
-    printDateTime(gps.date, gps.time);
-    printFloat(gps.altitude.meters(), gps.altitude.isValid(), 7, 2);
-    printFloat(gps.course.deg(), gps.course.isValid(), 7, 2);
-    printFloat(gps.speed.kmph(), gps.speed.isValid(), 6, 2);
-    */
+    dataOut = "";
 
-    Serial.print("Satellites: "); Serial.print(gps.satellites.value());
+    dataOut += "Sat: " + String(gps.satellites.value())          + ", ";
+    dataOut += "Lat: " + String(gps.location.lat())     + " deg" + ", ";
+    dataOut += "Lng: " + String(gps.location.lng())     + " deg" + ", ";
+    dataOut += "Alt: " + String(gps.altitude.meters())  + " m"   + ", ";
+    dataOut += "Spd: " + String(gps.speed.mps())        + " mps"       ;
 
-    Serial.println();
+    Serial.println(dataOut);
 
     smart_delay(1000);
 
@@ -50,8 +47,7 @@ void loop()
 
 }
 
-// This custom version of delay() ensures that the gps object
-// is being "fed".
+// This custom version of delay() ensures that the gps object is being "fed"
 void smart_delay(unsigned long ms)
 {
     unsigned long start = millis();
