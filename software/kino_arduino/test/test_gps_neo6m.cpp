@@ -32,11 +32,13 @@ void loop()
 
     dataOut = "";
 
-    dataOut += "Sat: " + String(gps.satellites.value())          + ", ";
-    dataOut += "Lat: " + String(gps.location.lat())     + " deg" + ", ";
-    dataOut += "Lng: " + String(gps.location.lng())     + " deg" + ", ";
-    dataOut += "Alt: " + String(gps.altitude.meters())  + " m"   + ", ";
-    dataOut += "Spd: " + String(gps.speed.mps())        + " mps"       ;
+    dataOut += "Sat: "  + String(gps.satellites.value())          + ", ";
+    dataOut += "HDOP: " + String(gps.hdop.hdop())                 + ", ";
+    dataOut += "Lat: "  + String(gps.location.lat())     + " deg" + ", ";
+    dataOut += "Lng: "  + String(gps.location.lng())     + " deg" + ", ";
+    dataOut += "Age: "  + String(gps.location.age())     + " ms"  + ", ";
+    dataOut += "Alt: "  + String(gps.altitude.meters())  + " m"   + ", ";
+    dataOut += "Spd: "  + String(gps.speed.mps())        + " mps"       ;
 
     Serial.println(dataOut);
 
