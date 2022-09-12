@@ -7,8 +7,10 @@
 //----------------------------------------------------------------------------//
 
 // SPI setup
+volatile bool keyValid = 0;
 
-const unsigned int nByte = 4;
+const    unsigned int nByte = 4, nData = 5;
+volatile unsigned int iByte = 0, iData = 0;
 
 typedef union
 {
@@ -16,16 +18,13 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-volatile unsigned int iByte = 0;
-volatile unsigned int iData = 0;
-
 FloatUnion dataTime;  // [s]
 FloatUnion dataTemp;  // [deg C]
 FloatUnion dataPress; // [hPa]
 FloatUnion dataAlt;   // [m]
 FloatUnion dataHum;   // [%]
 
-FloatUnion *dataOut[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
+FloatUnion *dataOut[nData] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
 
 //----------------------------------------------------------------------------//
 
@@ -43,31 +42,30 @@ Adafruit_BME280 bme;
 ISR (SPI_STC_vect)
 {
 
-    switch (SPDR)
+    int key = int(SPDR);
+
+    if (key >= 48)
     {
-        case 't': // Time
-            iByte = 0;
-            iData = 0;
-            break;
-        case 'm': // Temperature
-            iByte = 0;
-            iData = 1;
-            break;
-        case 'p': // Pressure
-            iByte = 0;
-            iData = 2;
-            break;
-        case 'a': // Altitude
-            iByte = 0;
-            iData = 3;
-            break;
-        case 'h': // Humidity
-            iByte = 0;
-            iData = 4;
-            break;
+        
+        iData = key - 48; // Offset from char '0'
+
+        if (iData < nData)
+        {
+            iByte    = 0; // Reset counter
+            keyValid = true;
+        }
+        else
+        {
+            keyValid = false;
+        }
+
+    }
+    else
+    {
+        keyValid = false;
     }
     
-    if (iByte < nByte)
+    if (keyValid && (iByte < nByte))
     {
         SPDR = dataOut[iData]->bytes[iByte++];
     }
