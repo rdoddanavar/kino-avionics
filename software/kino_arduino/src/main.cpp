@@ -87,19 +87,19 @@ void setup()
 
     Serial.begin(9600);
 
-	if (!bme.begin(0x76))
+    if (!bme.begin(0x76))
     {
-		Serial.println("Could not find a valid BME280 sensor, check wiring!");
-		while (1);
-	}
+        Serial.println("Could not find a valid BME280 sensor, check wiring!");
+        while (1);
+    }
 
     //////////////////////////////////
 
     Serial.print(millis() / 1.0e3); Serial.print(" , ");
-	Serial.print(bme.readTemperature()); Serial.print(" , ");
-	Serial.print(bme.readPressure() / 100.0f); Serial.print(" , ");
-	Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA)); Serial.print(" , ");
-	Serial.print(bme.readHumidity()); Serial.print(" , ");
+    Serial.print(bme.readTemperature()); Serial.print(" , ");
+    Serial.print(bme.readPressure() / 100.0f); Serial.print(" , ");
+    Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA)); Serial.print(" , ");
+    Serial.print(bme.readHumidity()); Serial.print(" , ");
 
     //////////////////////////////////
 
@@ -111,10 +111,10 @@ void loop()
 { 
     
     dataTime.value  = millis() / 1.0e3;
-	dataTemp.value  = bme.readTemperature();
-	dataPress.value = bme.readPressure() / 100.0f;
-	dataAlt.value   = bme.readAltitude(SEALEVELPRESSURE_HPA);
-	dataHum.value   = bme.readHumidity();
+    dataTemp.value  = bme.readTemperature();
+    dataPress.value = bme.readPressure() / 100.0f;
+    dataAlt.value   = bme.readAltitude(SEALEVELPRESSURE_HPA);
+    dataHum.value   = bme.readHumidity();
 
     delay(SAMPLE_TIME);
 

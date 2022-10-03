@@ -2,11 +2,17 @@
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
+//----------------------------------------------------------------------------//
+
+// General setup
 const int rxPin = 9;
 const int txPin = 8;
 
 const int monitorBaud = 9600; 
 const int gpsBaud     = 9600;
+const int sampleTime  = 1000; // Loop delay [ms]
+
+String dataOut;
 
 // The TinyGPSPlus object
 TinyGPSPlus gps;
@@ -16,11 +22,11 @@ SoftwareSerial ss(rxPin, txPin);
 
 void smart_delay(unsigned long ms);
 
-String dataOut;
+//----------------------------------------------------------------------------//
 
 void setup()
 {
-    
+
     Serial.begin(monitorBaud);
     ss.begin(gpsBaud);
     dataOut = "";
@@ -29,8 +35,6 @@ void setup()
 
 void loop()
 {
-
-    dataOut = "";
 
     dataOut += "Sat: "  + String(gps.satellites.value())          + ", ";
     dataOut += "HDOP: " + String(gps.hdop.hdop())                 + ", ";
@@ -41,8 +45,9 @@ void loop()
     dataOut += "Spd: "  + String(gps.speed.mps())        + " mps"       ;
 
     Serial.println(dataOut);
+    dataOut = "";
 
-    smart_delay(1000);
+    smart_delay(sampleTime);
 
     if (millis() > 5000 && gps.charsProcessed() < 10)
     Serial.println(F("No GPS data received: check wiring"));
