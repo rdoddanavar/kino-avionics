@@ -7,10 +7,11 @@
 //----------------------------------------------------------------------------//
 
 // SPI setup
-volatile bool keyValid = 0;
+const    uint8_t keyStart = 48;
+volatile bool    keyValid = 0;
 
-const    unsigned int nByte = 4, nData = 5;
-volatile unsigned int iByte = 0, iData = 0;
+const    uint16_t nByte = 4, nData = 5;
+volatile uint16_t iByte = 0, iData = 0;
 
 typedef union
 {
@@ -28,11 +29,16 @@ FloatUnion *dataOut[nData] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataH
 
 //----------------------------------------------------------------------------//
 
-// Sensor setup
-#define SAMPLE_TIME (10.0) // Loop delay [ms] 
+// General setup
+const uint16_t  monitorBaud = 9600; 
+const uint16_t  sampleTime  = 1000; // Loop delay [ms]
+const float     s_to_ms     = 1000;
 
 // BME280 setup
-#define SEALEVELPRESSURE_HPA (1013.25)
+const uint8_t i2cAddress           = 0x76;
+const float   seaLevelPressure_hPa = 1013.25f;
+const float   Pa_to_hPa            = 1.0f/100.0f;
+
 Adafruit_BME280 bme;
 
 //----------------------------------------------------------------------------//
@@ -44,10 +50,10 @@ ISR (SPI_STC_vect)
 
     int key = int(SPDR);
 
-    if (key >= 48)
+    if (key >= keyStart)
     {
         
-        iData = key - 48; // Offset from char '0'
+        iData = key - keyStart; // Offset from char '0'
 
         if (iData < nData)
         {
@@ -81,41 +87,27 @@ void setup()
     SPCR |= _BV(SPE);       //Turn on SPI in Slave Mode
     SPI.attachInterrupt();  //Activate SPI Interupt
 
-    dataTime.value = 0.0;
+    Serial.begin(monitorBaud);
 
-    //----------------------------//
-
-    Serial.begin(9600);
-
-    if (!bme.begin(0x76))
+    if (!bme.begin(i2cAddress))
     {
         Serial.println("Could not find a valid BME280 sensor, check wiring!");
         while (1);
     }
-
-    //////////////////////////////////
-
-    Serial.print(millis() / 1.0e3); Serial.print(" , ");
-    Serial.print(bme.readTemperature()); Serial.print(" , ");
-    Serial.print(bme.readPressure() / 100.0f); Serial.print(" , ");
-    Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA)); Serial.print(" , ");
-    Serial.print(bme.readHumidity()); Serial.print(" , ");
-
-    //////////////////////////////////
 
 }
 
 //----------------------------------------------------------------------------//
 
 void loop()
-{ 
+{
     
-    dataTime.value  = millis() / 1.0e3;
+    dataTime.value  = millis() / s_to_ms;
     dataTemp.value  = bme.readTemperature();
-    dataPress.value = bme.readPressure() / 100.0f;
-    dataAlt.value   = bme.readAltitude(SEALEVELPRESSURE_HPA);
+    dataPress.value = bme.readPressure() * Pa_to_hPa;
+    dataAlt.value   = bme.readAltitude(seaLevelPressure_hPa);
     dataHum.value   = bme.readHumidity();
 
-    delay(SAMPLE_TIME);
+    delay(sampleTime);
 
 }

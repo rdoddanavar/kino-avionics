@@ -5,12 +5,12 @@
 //----------------------------------------------------------------------------//
 
 // General setup
-const int rxPin = 9;
-const int txPin = 8;
+const uint8_t rxPin = 9;
+const uint8_t txPin = 8;
 
-const int monitorBaud = 9600; 
-const int gpsBaud     = 9600;
-const int sampleTime  = 1000; // Loop delay [ms]
+const uint16_t monitorBaud = 9600; 
+const uint16_t gpsBaud     = 9600;
+const uint16_t sampleTime  = 1000; // Loop delay [ms]
 
 String dataOut;
 
@@ -57,12 +57,15 @@ void loop()
 // This custom version of delay() ensures that the gps object is being "fed"
 void smart_delay(unsigned long ms)
 {
+    
     unsigned long start = millis();
-    do 
+
+    do
     {
         while (ss.available())
         {
             gps.encode(ss.read());
         }
     } while (millis() - start < ms);
+
 }
