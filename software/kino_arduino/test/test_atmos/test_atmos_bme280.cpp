@@ -12,8 +12,9 @@ const float    runTime     = 60.0f;  // Total loop time [s]
 const float    sampleRate  = 1.0f;   // Loop delay [Hz]
 const float    s_to_ms     = 1.0e3f;
 
+uint16_t iSample;
 uint16_t nSample;
-unit16_t nDelay;
+uint16_t nDelay;
 String dataOut;
 
 // BME280 setup
@@ -46,6 +47,7 @@ void setup()
         while (1);
     }
 
+    iSample = 0;
     nSample = (uint16_t) runTime*sampleRate;
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     dataOut = "";
@@ -57,7 +59,7 @@ void setup()
 void loop()
 {
 
-    if (i < nSample)
+    if (iSample < nSample)
     {   
         
         dataOut += "Temp: "  + String(degC_to_degF(bme.readTemperature()))            + "F"   + ", ";
@@ -69,7 +71,7 @@ void loop()
         dataOut = "";
 
         delay(nDelay);
-        i++
+        iSample++;
 
     }
     else
