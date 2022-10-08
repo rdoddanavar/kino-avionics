@@ -7,7 +7,6 @@
 //----------------------------------------------------------------------------//
 
 // General setup
-const uint32_t monitorBaud = 9600;
 const float    runTime     = 60.0f;  // Total loop time [s]
 const float    sampleRate  = 1.0f;   // Loop delay [Hz]
 const float    s_to_ms     = 1.0e3f;
@@ -15,6 +14,7 @@ const float    s_to_ms     = 1.0e3f;
 uint16_t iSample;
 uint16_t nSample;
 uint16_t nDelay;
+
 String dataOut;
 
 // BME280 setup
@@ -39,11 +39,8 @@ void setup()
 
     UNITY_BEGIN();
 
-    Serial.begin(monitorBaud);
-
     if (!bme.begin(i2cAddress))
     {
-        //Serial.println("Could not find a valid BME280 sensor, check wiring!");
         TEST_MESSAGE("Could not find a valid BME280 sensor, check wiring!");
         while (1);
     }
@@ -51,9 +48,6 @@ void setup()
     iSample = 0;
     nSample = (uint16_t) runTime*sampleRate;
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
-    dataOut = "";
-
-    Serial.println("test");
 
 }
 
@@ -65,14 +59,18 @@ void loop()
     if (iSample < nSample)
     {   
         
-        dataOut += "Temp: "  + String(degC_to_degF(bme.readTemperature()))            + "F"   + ", ";
-        dataOut += "Press: " + String(bme.readPressure() * Pa_to_psi)                 + "psi" + ", ";
-        dataOut += "Alt: "   + String(bme.readAltitude(seaLevelPressure_hPa)*m_to_ft) + "ft"  + ", ";
-        dataOut += "Hum: "   + String(bme.readHumidity())                             + "%"   + ""  ;
-
-        //Serial.println(dataOut);
-        TEST_MESSAGE(dataOut);
         dataOut = "";
+
+        dataOut += "Temp: "  + String(degC_to_degF(bme.readTemperature()))            + " F"   + ", ";
+        dataOut += "Press: " + String(bme.readPressure() * Pa_to_psi)                 + " psi" + ", ";
+        dataOut += "Alt: "   + String(bme.readAltitude(seaLevelPressure_hPa)*m_to_ft) + " ft"  + ", ";
+        dataOut += "Hum: "   + String(bme.readHumidity())                             + " %"   + ""  ;
+
+        uint16_t len = dataOut.length() + 1;
+        char     buf[len];
+
+        dataOut.toCharArray(buf, len);
+        TEST_MESSAGE(buf);
 
         delay(nDelay);
         iSample++;
