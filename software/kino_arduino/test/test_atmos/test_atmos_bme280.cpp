@@ -43,7 +43,8 @@ void setup()
 
     if (!bme.begin(i2cAddress))
     {
-        Serial.println("Could not find a valid BME280 sensor, check wiring!");
+        //Serial.println("Could not find a valid BME280 sensor, check wiring!");
+        TEST_MESSAGE("Could not find a valid BME280 sensor, check wiring!");
         while (1);
     }
 
@@ -51,6 +52,8 @@ void setup()
     nSample = (uint16_t) runTime*sampleRate;
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     dataOut = "";
+
+    Serial.println("test");
 
 }
 
@@ -67,7 +70,8 @@ void loop()
         dataOut += "Alt: "   + String(bme.readAltitude(seaLevelPressure_hPa)*m_to_ft) + "ft"  + ", ";
         dataOut += "Hum: "   + String(bme.readHumidity())                             + "%"   + ""  ;
 
-        Serial.println(dataOut);
+        //Serial.println(dataOut);
+        TEST_MESSAGE(dataOut);
         dataOut = "";
 
         delay(nDelay);
