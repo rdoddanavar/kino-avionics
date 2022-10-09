@@ -1,21 +1,24 @@
 #include <Arduino.h>
-#include <unity.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
+#include <unity.h> // Unit testing only
+
 //----------------------------------------------------------------------------//
 
 // General setup
-const float    runTime     = 60.0f;  // Total loop time [s]
-const float    sampleRate  = 1.0f;   // Loop delay [Hz]
-const float    s_to_ms     = 1.0e3f;
+const float runTime    = 60.0f;  // [s]
+const float sampleRate = 1.0f;   // [Hz]
+const float s_to_ms    = 1.0e3f;
 
 uint16_t iSample;
 uint16_t nSample;
-uint16_t nDelay;
+uint16_t nDelay; // [ms]
 
 String dataOut;
+
+//----------------------------------------------------------------------------//
 
 // BME280 setup
 const uint8_t i2cAddress           = 0x76;
@@ -37,6 +40,10 @@ float degC_to_degF(float degC)
 void setup()
 {
 
+    iSample = 0;
+    nSample = (uint16_t) runTime*sampleRate;
+    nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
+    
     UNITY_BEGIN();
 
     if (!bme.begin(i2cAddress))
@@ -44,10 +51,6 @@ void setup()
         TEST_MESSAGE("Could not find a valid BME280 sensor, check wiring!");
         while (1);
     }
-
-    iSample = 0;
-    nSample = (uint16_t) runTime*sampleRate;
-    nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
 
 }
 

@@ -1,8 +1,23 @@
+// General
 #include <Arduino.h>
 #include <SPI.h>
+
+// BME280
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
+
+// NEO6M
+#include <TinyGPSPlus.h>
+#include <SoftwareSerial.h>
+
+//----------------------------------------------------------------------------//
+
+// General setup
+const float sampleRate = 1.0f;   // [Hz]
+const float s_to_ms    = 1.0e3f;
+
+uint16_t nDelay; // [ms]
 
 //----------------------------------------------------------------------------//
 
@@ -29,17 +44,23 @@ FloatUnion *dataOut[nData] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataH
 
 //----------------------------------------------------------------------------//
 
-// General setup
-const uint16_t  monitorBaud = 9600; 
-const uint16_t  sampleTime  = 1000; // Loop delay [ms]
-const float     s_to_ms     = 1000;
-
 // BME280 setup
 const uint8_t i2cAddress           = 0x76;
 const float   seaLevelPressure_hPa = 1013.25f;
-const float   Pa_to_hPa            = 1.0f/100.0f;
+const float   Pa_to_psi            = 0.0001450380f;
+const float   m_to_ft              = 1.0f/0.3048f;
 
 Adafruit_BME280 bme;
+
+// NEO6M setup
+const uint16_t gpsBaud = 9600;
+const float    m_to_ft = 1.0f/0.3048f;
+
+const uint8_t rxPin = 9;
+const uint8_t txPin = 8;
+SoftwareSerial ss(rxPin, txPin);
+
+TinyGPSPlus gps;
 
 //----------------------------------------------------------------------------//
 
@@ -83,11 +104,14 @@ ISR (SPI_STC_vect)
 void setup()
 {
 
+    nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
+    
+    // Initialize SPI
     pinMode(MISO,OUTPUT);   //Sets MISO as OUTPUT
     SPCR |= _BV(SPE);       //Turn on SPI in Slave Mode
     SPI.attachInterrupt();  //Activate SPI Interupt
 
-    Serial.begin(monitorBaud);
+    // Initialize sensors
 
     if (!bme.begin(i2cAddress))
     {
