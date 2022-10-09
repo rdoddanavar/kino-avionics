@@ -1,25 +1,32 @@
 #include <Arduino.h>
+#include <unity.h>
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
 //----------------------------------------------------------------------------//
 
 // General setup
-const uint8_t rxPin = 9;
-const uint8_t txPin = 8;
+const float    runTime     = 60.0f;  // Total loop time [s]
+const float    sampleRate  = 1.0f;   // Loop delay [Hz]
+const float    s_to_ms     = 1.0e3f;
 
-const uint16_t monitorBaud = 9600; 
-const uint16_t gpsBaud     = 9600;
-const uint16_t sampleTime  = 1000; // Loop delay [ms]
+uint16_t iSample;
+uint16_t nSample;
+uint16_t nDelay;
 
 String dataOut;
 
-// The TinyGPSPlus object
-TinyGPSPlus gps;
+// NEO6M setup
+const uint16_t gpsBaud = 9600;
+const float    m_to_ft = 1.0f/0.3048f;
 
-// The serial connection to the GPS device
+const uint8_t  rxPin   = 9;
+const uint8_t  txPin   = 8;
 SoftwareSerial ss(rxPin, txPin);
 
+TinyGPSPlus gps;
+
+// This custom version of delay() ensures that the gps object is being "fed"
 void smart_delay(unsigned long ms);
 
 //----------------------------------------------------------------------------//
@@ -27,34 +34,58 @@ void smart_delay(unsigned long ms);
 void setup()
 {
 
-    Serial.begin(monitorBaud);
+    UNITY_BEGIN();
+
     ss.begin(gpsBaud);
-    dataOut = "";
+    
+    iSample = 0;
+    nSample = (uint16_t) runTime*sampleRate;
+    nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
 
 }
+
+//----------------------------------------------------------------------------//
 
 void loop()
 {
 
-    dataOut += "Sat: "  + String(gps.satellites.value())          + ", ";
-    dataOut += "HDOP: " + String(gps.hdop.hdop())                 + ", ";
-    dataOut += "Lat: "  + String(gps.location.lat())     + " deg" + ", ";
-    dataOut += "Lng: "  + String(gps.location.lng())     + " deg" + ", ";
-    dataOut += "Age: "  + String(gps.location.age())     + " ms"  + ", ";
-    dataOut += "Alt: "  + String(gps.altitude.meters())  + " m"   + ", ";
-    dataOut += "Spd: "  + String(gps.speed.mps())        + " mps"       ;
+    if (iSample < nSample)
+    {   
+    
+        dataOut = "";
+        
+        dataOut += "Sat: "  + String(gps.satellites.value())        + ", ";
+        dataOut += "HDOP: " + String(gps.hdop.hdop())               + ", ";
+        dataOut += "Lat: "  + String(gps.location.lat())            + " deg" + ", ";
+        dataOut += "Lng: "  + String(gps.location.lng())            + " deg" + ", ";
+        dataOut += "Age: "  + String(gps.location.age())            + " ms"  + ", ";
+        dataOut += "Alt: "  + String(gps.altitude.meters()*m_to_ft) + " ft"  + ", ";
+        dataOut += "Spd: "  + String(gps.speed.mps()*m_to_ft)       + " fps"       ;
 
-    Serial.println(dataOut);
-    dataOut = "";
+        uint16_t len = dataOut.length() + 1;
+        char     buf[len];
 
-    smart_delay(sampleTime);
+        dataOut.toCharArray(buf, len);
+        TEST_MESSAGE(buf);
 
-    if (millis() > 5000 && gps.charsProcessed() < 10)
-    Serial.println(F("No GPS data received: check wiring"));
+        smart_delay(nDelay);
+        iSample++;
 
+        if (millis() > 5000 && gps.charsProcessed() < 10)
+        {
+            TEST_MESSAGE("No GPS data received: check wiring");
+        }
+
+    }
+    else
+    {
+        UNITY_END();
+    }
+    
 }
 
-// This custom version of delay() ensures that the gps object is being "fed"
+//----------------------------------------------------------------------------//
+
 void smart_delay(unsigned long ms)
 {
     

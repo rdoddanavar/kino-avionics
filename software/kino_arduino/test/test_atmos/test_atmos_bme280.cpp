@@ -62,7 +62,7 @@ void loop()
         dataOut = "";
 
         dataOut += "Temp: "  + String(degC_to_degF(bme.readTemperature()))            + " F"   + ", ";
-        dataOut += "Press: " + String(bme.readPressure() * Pa_to_psi)                 + " psi" + ", ";
+        dataOut += "Press: " + String(bme.readPressure()*Pa_to_psi)                   + " psi" + ", ";
         dataOut += "Alt: "   + String(bme.readAltitude(seaLevelPressure_hPa)*m_to_ft) + " ft"  + ", ";
         dataOut += "Hum: "   + String(bme.readHumidity())                             + " %"   + ""  ;
 
