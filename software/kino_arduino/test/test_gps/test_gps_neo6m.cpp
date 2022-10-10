@@ -57,13 +57,13 @@ void loop()
     
         dataOut = "";
         
-        dataOut += "Sat: "  + String(gps.satellites.value())        + ", ";
-        dataOut += "HDOP: " + String(gps.hdop.hdop())               + ", ";
-        dataOut += "Lat: "  + String(gps.location.lat())            + " deg" + ", ";
-        dataOut += "Lng: "  + String(gps.location.lng())            + " deg" + ", ";
-        dataOut += "Age: "  + String(gps.location.age())            + " ms"  + ", ";
-        dataOut += "Alt: "  + String(gps.altitude.meters()*m_to_ft) + " ft"  + ", ";
-        dataOut += "Spd: "  + String(gps.speed.mps()*m_to_ft)       + " fps"       ;
+        dataOut += "Sat: "  + String(gps.satellites.value())  + ", ";
+        dataOut += "HDOP: " + String(gps.hdop.hdop())         + ", ";
+        dataOut += "Lat: "  + String(gps.location.lat())      + " deg"  + ", ";
+        dataOut += "Lng: "  + String(gps.location.lng())      + " deg"  + ", ";
+        dataOut += "Age: "  + String(gps.location.age())      + " ms"   + ", ";
+        dataOut += "Alt: "  + String(gps.altitude.feet())     + " ft"   + ", ";
+        dataOut += "Spd: "  + String(gps.speed.mps()*m_to_ft) + " ft/s"       ;
 
         uint16_t len = dataOut.length() + 1;
         char     buf[len];

@@ -25,7 +25,7 @@ uint16_t nDelay; // [ms]
 const    uint8_t keyStart = 48;
 volatile bool    keyValid = 0;
 
-const    uint16_t nByte = 4, nData = 5;
+const    uint16_t nByte = 4, nData = 9;
 volatile uint16_t iByte = 0, iData = 0;
 
 typedef union
@@ -34,13 +34,23 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-FloatUnion dataTime;  // [s]
-FloatUnion dataTemp;  // [deg C]
-FloatUnion dataPress; // [hPa]
-FloatUnion dataAlt;   // [m]
-FloatUnion dataHum;   // [%]
+// General data
+FloatUnion dataTime; // [s]
 
-FloatUnion *dataOut[nData] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
+// BME280 data
+FloatUnion dataTemp;     // [deg F]
+FloatUnion dataPress;    // [psi]
+FloatUnion dataAltPress; // [ft]
+FloatUnion dataHum;      // [%]
+
+// NEO6M data
+FloatUnion dataLat;    // [deg]
+FloatUnion dataLng;    // [deg]
+FloatUnion dataAltGps; // [ft]
+FloatUnion dataSpd;    // [ft/s]
+
+FloatUnion *dataOut[nData] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
+                               &dataLat,  &dataLng, &dataAltGps, &dataSpd};
 
 //----------------------------------------------------------------------------//
 
@@ -54,13 +64,19 @@ Adafruit_BME280 bme;
 
 // NEO6M setup
 const uint16_t gpsBaud = 9600;
-const float    m_to_ft = 1.0f/0.3048f;
 
 const uint8_t rxPin = 9;
 const uint8_t txPin = 8;
 SoftwareSerial ss(rxPin, txPin);
 
 TinyGPSPlus gps;
+
+//----------------------------------------------------------------------------//
+
+float degC_to_degF(float degC)
+{
+    return (degC*(9.0f/5.0f) + 32.0f);
+}
 
 //----------------------------------------------------------------------------//
 
@@ -107,9 +123,9 @@ void setup()
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     
     // Initialize SPI
-    pinMode(MISO,OUTPUT);   //Sets MISO as OUTPUT
-    SPCR |= _BV(SPE);       //Turn on SPI in Slave Mode
-    SPI.attachInterrupt();  //Activate SPI Interupt
+    pinMode(MISO,OUTPUT);  // Sets MISO as OUTPUT
+    SPCR |= _BV(SPE);      // Turn on SPI in Slave Mode
+    SPI.attachInterrupt(); // Activate SPI Interupt
 
     // Initialize sensors
 
@@ -119,6 +135,8 @@ void setup()
         while (1);
     }
 
+    ss.begin(gpsBaud);
+
 }
 
 //----------------------------------------------------------------------------//
@@ -126,12 +144,26 @@ void setup()
 void loop()
 {
     
-    dataTime.value  = millis() / s_to_ms;
-    dataTemp.value  = bme.readTemperature();
-    dataPress.value = bme.readPressure() * Pa_to_hPa;
-    dataAlt.value   = bme.readAltitude(seaLevelPressure_hPa);
-    dataHum.value   = bme.readHumidity();
+    dataTime.value = millis()/s_to_ms;
+    
+    // Read BME280 data
+    dataTemp.value     = degC_to_degF(bme.readTemperature());
+    dataPress.value    = bme.readPressure()*Pa_to_psi;
+    dataAltPress.value = bme.readAltitude(seaLevelPressure_hPa)*m_to_ft;
+    dataHum.value      = bme.readHumidity();
 
-    delay(sampleTime);
+    // Read NEO6M data
+
+    if (ss.available())
+    {
+        gps.encode(ss.read());
+    }
+
+    dataLat.value      = gps.location.lat();
+    dataLng.value      = gps.location.lng();
+    dataAltPress.value = gps.altitude.feet();
+    dataSpd.value      = gps.speed.mps()*m_to_ft;
+
+    delay(nDelay);
 
 }
