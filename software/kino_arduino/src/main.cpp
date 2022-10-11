@@ -25,8 +25,8 @@ uint16_t nDelay; // [ms]
 const    uint8_t keyStart = 48;
 volatile bool    keyValid = 0;
 
-const    uint16_t nByte = 4, nData = 9;
-volatile uint16_t iByte = 0, iData = 0;
+const    uint8_t nByte = 4, nData = 9;
+volatile uint8_t iByte = 0, iData = 0;
 
 typedef union
 {

@@ -22,12 +22,15 @@ Dependencies:
 
 // Builtin libraries
 #include <stdio.h>
+#include <stdint.h>
 
 // Project libraries
 #include "pigpio.h"
 
-// Types
-#define nByte 4
+//----------------------------------------------------------------------------//
+
+// SPI setup
+const uint8_t nByte = 4, nData = 9;
 
 typedef union
 {
@@ -35,16 +38,25 @@ typedef union
     uint8_t bytes[nByte];
 } FloatUnion;
 
-//----------------------------------------------------------------------------//
+// General data
+FloatUnion dataTime; // [s]
 
-FloatUnion dataTime;  // [s]
-FloatUnion dataTemp;  // [deg C]
-FloatUnion dataPress; // [hPa]
-FloatUnion dataAlt;   // [m]
-FloatUnion dataHum;   // [%]
+// BME280 data
+FloatUnion dataTemp;     // [deg F]
+FloatUnion dataPress;    // [psi]
+FloatUnion dataAltPress; // [ft]
+FloatUnion dataHum;      // [%]
 
-FloatUnion *dataUnion[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
-const char  dataKey[]   = {'t', 'm', 'p', 'a', 'h'};
+// NEO6M data
+FloatUnion dataLat;    // [deg]
+FloatUnion dataLng;    // [deg]
+FloatUnion dataAltGps; // [ft]
+FloatUnion dataSpd;    // [ft/s]
+
+FloatUnion *dataUnion[nData] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
+                               &dataLat,  &dataLng, &dataAltGps, &dataSpd};
+
+const char dataKey[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
 
 //----------------------------------------------------------------------------//
 
@@ -59,14 +71,13 @@ int main(void)
         
         printf("pigpio initialization successful\n");
 
-        unsigned int spiChan  = 0;
-        unsigned int baud     = 32000; // Min: 32000, Max: 125000000
-        unsigned int spiFlags = 0;
+        uint8_t  spiChan = 0, spiFlags = 0;
+        uint16_t baud    = 32000; // Min: 32000, Max: 125000000
 
         int handle = spiOpen(spiChan, baud, spiFlags);
 
         char buf[nByte];
-        unsigned int count = 1; // Number of bytes to read
+        uint8_t count = 1; // Number of bytes to read
 
         int status = 0;
 
@@ -75,16 +86,13 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            const unsigned int nCount = 10;
-            const unsigned int nData  = 5;
+            uint16_t nSample = 10;
+            uint16_t iSample;
+            uint8_t  iData, iByte;
 
-            int iPing;
-            int iData;
-            int iByte;
+            float data[nSample][nData];
 
-            float data[nCount][nData];
-
-            for (iPing=0; iPing<nCount; iPing++)
+            for (iSample=0; iSample<nSample; iSample++)
             {  
                 for (iData=0; iData<nData; iData++)
                 {
@@ -98,7 +106,7 @@ int main(void)
                         dataUnion[iData]->bytes[iByte] = buf[0];
                     }
 
-                    data[iPing][iData] = dataUnion[iData]->value;
+                    data[iSample][iData] = dataUnion[iData]->value;
 
                     //printf("test: %c, %.2f\n", dataKey[iData], dataUnion[iData]->value);
 
@@ -108,14 +116,14 @@ int main(void)
 
             spiClose(handle);
 
-            for (iPing=0; iPing<nCount; iPing++)
+            for (iSample=0; iSample<nSample; iSample++)
             {
                 
-                printf("(%d/%d): ", iPing, nCount);
+                printf("(%d/%d): ", iSample, nSample);
                 
                 for (iData=0; iData<nData; iData++)
                 {
-                    printf("%c%.3f, ", dataKey[iData], data[iPing][iData]);
+                    printf("%c%.3f, ", dataKey[iData], data[iSample][iData]);
                 }
 
                 printf("\n");
