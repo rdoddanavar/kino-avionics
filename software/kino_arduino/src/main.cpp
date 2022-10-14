@@ -23,7 +23,7 @@ uint16_t nDelay; // [ms]
 
 // SPI setup
 const    uint8_t keyStart = 48;
-volatile bool    keyValid = 0;
+volatile bool    keyValid = false;
 
 const    uint8_t nByte = 4, nData = 9;
 volatile uint8_t iByte = 0, iData = 0;
@@ -85,12 +85,14 @@ float degC_to_degF(float degC)
 ISR (SPI_STC_vect)
 {
 
-    int key = int(SPDR);
+    uint8_t key = SPDR;
 
-    if (key >= 0) //keyStart)
+    Serial.println(key);
+
+    if (key >= keyStart)
     {
         
-        iData = key; // - keyStart; // Offset from char '0'
+        iData = key - keyStart; // Offset from char '0'
 
         if (iData < nData)
         {
@@ -119,6 +121,8 @@ ISR (SPI_STC_vect)
 
 void setup()
 {
+
+    Serial.begin(9600);
 
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     

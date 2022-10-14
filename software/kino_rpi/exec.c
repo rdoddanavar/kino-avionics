@@ -89,7 +89,7 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            uint16_t nSample = 10;
+            uint16_t nSample = 1;
             uint16_t iSample;
             uint8_t  iData, iByte;
 
@@ -97,12 +97,15 @@ int main(void)
 
             // Read data using SPI
 
+            char dataKey[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
+
             for (iSample=0; iSample<nSample; iSample++)
             {  
-                for (iData=0; iData<NDATA; iData++)
+                for (iData=0; iData<3; iData++)
                 {
 
-                    buf[0] = iData;
+                    //buf[0] = iData;//(char) (iData + 48);
+                    buf[0] = dataKey[iData];
                     spiWrite(handle, buf, count);
 
                     for (iByte=0; iByte<NBYTE; iByte++)
@@ -113,7 +116,12 @@ int main(void)
 
                     data[iSample][iData] = dataOut[iData]->value;
 
+                    printf("iData = %d\n", iData);
+
                 }
+
+                printf("Time: %.3f s\n", dataOut[0]->value);
+
                 time_sleep(1.0f/sampleRate);
             }
 
