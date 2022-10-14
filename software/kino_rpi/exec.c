@@ -33,12 +33,13 @@ Dependencies:
 const float sampleRate = 1.0f; // [Hz]
 
 // SPI setup
-const uint8_t nByte = 4, nData = 9;
+#define NBYTE (4)
+#define NDATA (9)
 
 typedef union
 {
     float value;
-    uint8_t bytes[nByte];
+    uint8_t bytes[NBYTE];
 } FloatUnion;
 
 // General data
@@ -56,7 +57,7 @@ FloatUnion dataLng;    // [deg]
 FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
-FloatUnion *dataOut[nData] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
+FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
                                 &dataLat, &dataLng, &dataAltGps, &dataSpd};
 
 //----------------------------------------------------------------------------//
@@ -78,7 +79,7 @@ int main(void)
 
         int handle = spiOpen(spiChan, baud, spiFlags);
 
-        char buf[nByte];
+        char buf[NBYTE];
         uint8_t count = 1; // Number of bytes to read
 
         int status = 0;
@@ -92,19 +93,19 @@ int main(void)
             uint16_t iSample;
             uint8_t  iData, iByte;
 
-            float data[nSample][nData];
+            float data[nSample][NDATA];
 
             // Read data using SPI
 
             for (iSample=0; iSample<nSample; iSample++)
             {  
-                for (iData=0; iData<nData; iData++)
+                for (iData=0; iData<NDATA; iData++)
                 {
 
                     buf[0] = iData;
                     spiWrite(handle, buf, count);
 
-                    for (iByte=0; iByte<nByte; iByte++)
+                    for (iByte=0; iByte<NBYTE; iByte++)
                     {
                         status = spiRead(handle, buf, count);
                         dataOut[iData]->bytes[iByte] = buf[0];
@@ -132,7 +133,7 @@ int main(void)
                 for (iSample=0; iSample<nSample; iSample++)
                 {
                     
-                    for (iData=0; iData<nData; iData++)
+                    for (iData=0; iData<NDATA; iData++)
                     {
                         fprintf(fileOut, "%.3f, ", data[iSample][iData]);
                     }
