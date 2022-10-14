@@ -87,10 +87,10 @@ ISR (SPI_STC_vect)
 
     int key = int(SPDR);
 
-    if (key >= keyStart)
+    if (key >= 0) //keyStart)
     {
         
-        iData = key - keyStart; // Offset from char '0'
+        iData = key; // - keyStart; // Offset from char '0'
 
         if (iData < nData)
         {

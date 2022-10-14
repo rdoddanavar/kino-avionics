@@ -29,6 +29,9 @@ Dependencies:
 
 //----------------------------------------------------------------------------//
 
+// General setup
+const float sampleRate = 1.0f; // [Hz]
+
 // SPI setup
 const uint8_t nByte = 4, nData = 9;
 
@@ -53,15 +56,14 @@ FloatUnion dataLng;    // [deg]
 FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
-FloatUnion *dataUnion[nData] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
-                               &dataLat,  &dataLng, &dataAltGps, &dataSpd};
-
-const char dataKey[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
+FloatUnion *dataOut[nData] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
+                                &dataLat, &dataLng, &dataAltGps, &dataSpd};
 
 //----------------------------------------------------------------------------//
 
 int main(void)
 {
+    
     if (gpioInitialise() < 0)
     {
         printf("pigpio initialization failed\n");
@@ -92,41 +94,54 @@ int main(void)
 
             float data[nSample][nData];
 
+            // Read data using SPI
+
             for (iSample=0; iSample<nSample; iSample++)
             {  
                 for (iData=0; iData<nData; iData++)
                 {
 
-                    buf[0] = dataKey[iData];
+                    buf[0] = iData;
                     spiWrite(handle, buf, count);
 
                     for (iByte=0; iByte<nByte; iByte++)
                     {
                         status = spiRead(handle, buf, count);
-                        dataUnion[iData]->bytes[iByte] = buf[0];
+                        dataOut[iData]->bytes[iByte] = buf[0];
                     }
 
-                    data[iSample][iData] = dataUnion[iData]->value;
-
-                    //printf("test: %c, %.2f\n", dataKey[iData], dataUnion[iData]->value);
+                    data[iSample][iData] = dataOut[iData]->value;
 
                 }
-                time_sleep(0.1);
+                time_sleep(1.0f/sampleRate);
             }
 
             spiClose(handle);
 
-            for (iSample=0; iSample<nSample; iSample++)
+            // Write data to file
+            FILE *fileOut;
+
+            fileOut = fopen("data.csv", "w+");
+
+            if (fileOut != NULL)
             {
                 
-                printf("(%d/%d): ", iSample, nSample);
+                char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
+                fprintf(fileOut, "%s\n", headerStr);
                 
-                for (iData=0; iData<nData; iData++)
+                for (iSample=0; iSample<nSample; iSample++)
                 {
-                    printf("%c%.3f, ", dataKey[iData], data[iSample][iData]);
+                    
+                    for (iData=0; iData<nData; iData++)
+                    {
+                        fprintf(fileOut, "%.3f, ", data[iSample][iData]);
+                    }
+
+                    fprintf(fileOut, "\n");
+
                 }
 
-                printf("\n");
+                fclose(fileOut);
 
             }
 
@@ -135,7 +150,11 @@ int main(void)
         {
             printf("SPI open failed!\n");
         }
+
         gpioTerminate();
+
     }
+
     return 0;
+
 }
