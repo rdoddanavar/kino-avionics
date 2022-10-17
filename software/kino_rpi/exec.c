@@ -34,7 +34,8 @@ const float sampleRate = 1.0f; // [Hz]
 
 // SPI setup
 #define NBYTE (4)
-#define NDATA (9)
+//#define NDATA (9)
+#define NDATA (5)
 
 typedef union
 {
@@ -57,8 +58,10 @@ FloatUnion dataLng;    // [deg]
 FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
-FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
-                                &dataLat, &dataLng, &dataAltGps, &dataSpd};
+// FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
+//                                 &dataLat, &dataLng, &dataAltGps, &dataSpd};
+
+FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum};
 
 //----------------------------------------------------------------------------//
 
@@ -101,26 +104,29 @@ int main(void)
 
             for (iSample=0; iSample<nSample; iSample++)
             {  
-                for (iData=0; iData<3; iData++)
+                for (iData=0; iData<NDATA; iData++)
                 {
 
                     //buf[0] = iData;//(char) (iData + 48);
                     buf[0] = dataKey[iData];
                     spiWrite(handle, buf, count);
 
+                    printf("iData = %d, Bytes = ", iData);
+
                     for (iByte=0; iByte<NBYTE; iByte++)
                     {
                         status = spiRead(handle, buf, count);
                         dataOut[iData]->bytes[iByte] = buf[0];
+
+                        printf("%d, ", (uint8_t) buf[0]);
                     }
 
                     data[iSample][iData] = dataOut[iData]->value;
 
-                    printf("iData = %d\n", iData);
+                    //printf("iData = %d, Value = %.3f\n", iData, dataOut[iData]->value);
+                    printf("\n");
 
                 }
-
-                printf("Time: %.3f s\n", dataOut[0]->value);
 
                 time_sleep(1.0f/sampleRate);
             }
