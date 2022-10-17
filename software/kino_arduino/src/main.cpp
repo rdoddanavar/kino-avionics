@@ -141,7 +141,7 @@ void setup()
         while (1);
     }
 
-    //ss.begin(gpsBaud);
+    ss.begin(gpsBaud);
 
 }
 
@@ -160,15 +160,15 @@ void loop()
 
     // Read NEO6M data
 
-    // if (ss.available())
-    // {
-    //     gps.encode(ss.read());
-    // }
+    if (ss.available())
+    {
+        gps.encode(ss.read());
+    }
 
-    // dataLat.value      = gps.location.lat();
-    // dataLng.value      = gps.location.lng();
-    // dataAltPress.value = gps.altitude.feet();
-    // dataSpd.value      = gps.speed.mps()*m_to_ft;
+    dataLat.value    = gps.location.lat();
+    dataLng.value    = gps.location.lng();
+    dataAltGps.value = gps.altitude.feet();
+    dataSpd.value    = gps.speed.mps()*m_to_ft;
 
     delay(nDelay);
 

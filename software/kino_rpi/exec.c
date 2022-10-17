@@ -78,7 +78,7 @@ int main(void)
         printf("pigpio initialization successful\n");
 
         uint8_t  spiChan = 0, spiFlags = 0;
-        uint16_t baud    = 32000; // Min: 32000, Max: 125000000
+        uint32_t baud    = 32000; // Min: 32000, Max: 125000000
 
         int handle = spiOpen(spiChan, baud, spiFlags);
 
@@ -92,7 +92,7 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            uint16_t nSample = 1;
+            uint16_t nSample = 100;
             uint16_t iSample;
             uint8_t  iData, iByte;
 
@@ -101,6 +101,9 @@ int main(void)
             // Read data using SPI
 
             char dataKey[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
+
+            char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
+            printf("%s\n", headerStr);
 
             for (iSample=0; iSample<nSample; iSample++)
             {  
@@ -111,23 +114,22 @@ int main(void)
                     buf[0] = dataKey[iData];
                     spiWrite(handle, buf, count);
 
-                    printf("iData = %d, Bytes = ", iData);
+                    //printf("iData = %d, Bytes = ", iData);
 
                     for (iByte=0; iByte<NBYTE; iByte++)
                     {
                         status = spiRead(handle, buf, count);
                         dataOut[iData]->bytes[iByte] = buf[0];
 
-                        printf("%d, ", (uint8_t) buf[0]);
+                        //printf("%d, ", (uint8_t) buf[0]);
                     }
 
                     data[iSample][iData] = dataOut[iData]->value;
 
-                    //printf("iData = %d, Value = %.3f\n", iData, dataOut[iData]->value);
-                    printf("\n");
+                    printf("%.3f, ", dataOut[iData]->value);
 
                 }
-
+                printf("\n");
                 time_sleep(1.0f/sampleRate);
             }
 
@@ -141,7 +143,7 @@ int main(void)
             if (fileOut != NULL)
             {
                 
-                char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
+                //char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
                 fprintf(fileOut, "%s\n", headerStr);
                 
                 for (iSample=0; iSample<nSample; iSample++)
