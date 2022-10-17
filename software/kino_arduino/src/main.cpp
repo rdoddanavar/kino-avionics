@@ -23,7 +23,7 @@ uint16_t nDelay; // [ms]
 
 // SPI setup
 const    uint8_t keyStart = 48;
-volatile bool    keyValid = false;
+volatile bool    spiWrite = false;
 
 const    uint8_t nByte = 4, nData = 9;
 volatile uint8_t iByte = 0, iData = 0;
@@ -89,33 +89,32 @@ ISR (SPI_STC_vect)
 
     //Serial.println(key);
 
-    if (key >= keyStart)
+    if (!spiWrite && (key >= keyStart))
     {
         
         iData = key - keyStart; // Offset from char '0'
 
-        Serial.println(dataOut[iData]->value);
+        //Serial.println(dataOut[iData]->value);
 
         if (iData < nData)
         {
+            spiWrite = true;
             iByte    = 0; // Reset counter
-            keyValid = true;
-        }
-        else
-        {
-            keyValid = false;
         }
 
     }
-    else
-    {
-        keyValid = false;
-    }
     
-    if (iByte < nByte)
+    if (spiWrite)
     {
-        SPDR = dataOut[iData]->bytes[iByte++];
-        Serial.println(iByte);
+        if (iByte < nByte)
+        {
+            SPDR = dataOut[iData]->bytes[iByte++];
+            //Serial.println(iByte);
+        }
+        else
+        {
+            spiWrite = false;
+        }
     }
 
 }
@@ -125,7 +124,7 @@ ISR (SPI_STC_vect)
 void setup()
 {
 
-    Serial.begin(9600);
+    //Serial.begin(9600);
 
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     
