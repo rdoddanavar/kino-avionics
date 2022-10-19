@@ -100,28 +100,18 @@ int main(void)
 
             // Read data using SPI
 
-            char dataKey[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
-
-            char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
-            printf("%s\n", headerStr);
-
             for (iSample=0; iSample<nSample; iSample++)
             {  
                 for (iData=0; iData<NDATA; iData++)
                 {
 
-                    //buf[0] = iData;//(char) (iData + 48);
-                    buf[0] = dataKey[iData];
+                    buf[0] = (char) (iData + 48);
                     spiWrite(handle, buf, count);
-
-                    //printf("iData = %d, Bytes = ", iData);
 
                     for (iByte=0; iByte<NBYTE; iByte++)
                     {
                         status = spiRead(handle, buf, count);
                         dataOut[iData]->bytes[iByte] = buf[0];
-
-                        //printf("%d, ", (uint8_t) buf[0]);
                     }
 
                     data[iSample][iData] = dataOut[iData]->value;
@@ -143,7 +133,7 @@ int main(void)
             if (fileOut != NULL)
             {
                 
-                //char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
+                char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
                 fprintf(fileOut, "%s\n", headerStr);
                 
                 for (iSample=0; iSample<nSample; iSample++)

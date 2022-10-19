@@ -73,13 +73,6 @@ TinyGPSPlus gps;
 
 //----------------------------------------------------------------------------//
 
-float degC_to_degF(float degC)
-{
-    return (degC*(9.0f/5.0f) + 32.0f);
-}
-
-//----------------------------------------------------------------------------//
-
 // Interrupt routine function
 
 ISR (SPI_STC_vect)
@@ -121,6 +114,45 @@ ISR (SPI_STC_vect)
 
 //----------------------------------------------------------------------------//
 
+float degC_to_degF(float degC)
+{
+    return (degC*(9.0f/5.0f) + 32.0f);
+}
+
+//----------------------------------------------------------------------------//
+
+void read_atmos()
+{
+    
+    // Read BME280 data
+    dataTemp.value     = degC_to_degF(bme.readTemperature());
+    dataPress.value    = bme.readPressure()*Pa_to_psi;
+    dataAltPress.value = bme.readAltitude(seaLevelPressure_hPa)*m_to_ft;
+    dataHum.value      = bme.readHumidity();
+
+}
+
+//----------------------------------------------------------------------------//
+
+void read_gps()
+{
+    
+    // Read NEO6M data
+
+    if (ss.available())
+    {
+        gps.encode(ss.read());
+    }
+
+    dataLat.value    = gps.location.lat();
+    dataLng.value    = gps.location.lng();
+    dataAltGps.value = gps.altitude.feet();
+    dataSpd.value    = gps.speed.mps()*m_to_ft;
+
+}
+
+//----------------------------------------------------------------------------//
+
 void setup()
 {
 
@@ -151,24 +183,10 @@ void loop()
 {
     
     dataTime.value = millis()/s_to_ms;
-    
-    // Read BME280 data
-    dataTemp.value     = degC_to_degF(bme.readTemperature());
-    dataPress.value    = bme.readPressure()*Pa_to_psi;
-    dataAltPress.value = bme.readAltitude(seaLevelPressure_hPa)*m_to_ft;
-    dataHum.value      = bme.readHumidity();
 
-    // Read NEO6M data
-
-    if (ss.available())
-    {
-        gps.encode(ss.read());
-    }
-
-    dataLat.value    = gps.location.lat();
-    dataLng.value    = gps.location.lng();
-    dataAltGps.value = gps.altitude.feet();
-    dataSpd.value    = gps.speed.mps()*m_to_ft;
+    // Read sensors
+    read_atmos();
+    read_gps();
 
     delay(nDelay);
 
