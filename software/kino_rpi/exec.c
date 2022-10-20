@@ -34,8 +34,7 @@ const float sampleRate = 1.0f; // [Hz]
 
 // SPI setup
 #define NBYTE (4)
-//#define NDATA (9)
-#define NDATA (5)
+#define NDATA (9)
 
 typedef union
 {
@@ -58,10 +57,8 @@ FloatUnion dataLng;    // [deg]
 FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
-// FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
-//                                 &dataLat, &dataLng, &dataAltGps, &dataSpd};
-
-FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum};
+FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp, &dataPress , &dataAltPress, &dataHum,
+                              &dataLat , &dataLng , &dataAltGps, &dataSpd    };
 
 //----------------------------------------------------------------------------//
 

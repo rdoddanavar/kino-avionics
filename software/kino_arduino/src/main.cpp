@@ -80,14 +80,10 @@ ISR (SPI_STC_vect)
 
     uint8_t key = SPDR;
 
-    //Serial.println(key);
-
     if (!spiWrite && (key >= keyStart))
     {
         
         iData = key - keyStart; // Offset from char '0'
-
-        //Serial.println(dataOut[iData]->value);
 
         if (iData < nData)
         {
@@ -102,7 +98,6 @@ ISR (SPI_STC_vect)
         if (iByte < nByte)
         {
             SPDR = dataOut[iData]->bytes[iByte++];
-            //Serial.println(iByte);
         }
         else
         {
@@ -155,8 +150,6 @@ void read_gps()
 
 void setup()
 {
-
-    //Serial.begin(9600);
 
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     
