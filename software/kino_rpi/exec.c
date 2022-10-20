@@ -22,34 +22,49 @@ Dependencies:
 
 // Builtin libraries
 #include <stdio.h>
+#include <stdint.h>
 
 // Project libraries
 #include "pigpio.h"
 
-// Types
-#define nByte 4
+//----------------------------------------------------------------------------//
+
+// General setup
+const float sampleRate = 1.0f; // [Hz]
+
+// SPI setup
+#define NBYTE (4)
+#define NDATA (9)
 
 typedef union
 {
     float value;
-    uint8_t bytes[nByte];
+    uint8_t bytes[NBYTE];
 } FloatUnion;
 
-//----------------------------------------------------------------------------//
+// General data
+FloatUnion dataTime; // [s]
 
-FloatUnion dataTime;  // [s]
-FloatUnion dataTemp;  // [deg C]
-FloatUnion dataPress; // [hPa]
-FloatUnion dataAlt;   // [m]
-FloatUnion dataHum;   // [%]
+// BME280 data
+FloatUnion dataTemp;     // [deg F]
+FloatUnion dataPress;    // [psi]
+FloatUnion dataAltPress; // [ft]
+FloatUnion dataHum;      // [%]
 
-FloatUnion *dataUnion[] = {&dataTime, &dataTemp, &dataPress, &dataAlt, &dataHum};
-const char  dataKey[]   = {'t', 'm', 'p', 'a', 'h'};
+// NEO6M data
+FloatUnion dataLat;    // [deg]
+FloatUnion dataLng;    // [deg]
+FloatUnion dataAltGps; // [ft]
+FloatUnion dataSpd;    // [ft/s]
+
+FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp, &dataPress , &dataAltPress, &dataHum,
+                              &dataLat , &dataLng , &dataAltGps, &dataSpd    };
 
 //----------------------------------------------------------------------------//
 
 int main(void)
 {
+    
     if (gpioInitialise() < 0)
     {
         printf("pigpio initialization failed\n");
@@ -59,14 +74,13 @@ int main(void)
         
         printf("pigpio initialization successful\n");
 
-        unsigned int spiChan  = 0;
-        unsigned int baud     = 32000; // Min: 32000, Max: 125000000
-        unsigned int spiFlags = 0;
+        uint8_t  spiChan = 0, spiFlags = 0;
+        uint32_t baud    = 32000; // Min: 32000, Max: 125000000
 
         int handle = spiOpen(spiChan, baud, spiFlags);
 
-        char buf[nByte];
-        unsigned int count = 1; // Number of bytes to read
+        char buf[NBYTE];
+        uint8_t count = 1; // Number of bytes to read
 
         int status = 0;
 
@@ -75,50 +89,63 @@ int main(void)
             
             printf("SPI open successful!\n");
 
-            const unsigned int nCount = 10;
-            const unsigned int nData  = 5;
+            uint16_t nSample = 100;
+            uint16_t iSample;
+            uint8_t  iData, iByte;
 
-            int iPing;
-            int iData;
-            int iByte;
+            float data[nSample][NDATA];
 
-            float data[nCount][nData];
+            // Read data using SPI
 
-            for (iPing=0; iPing<nCount; iPing++)
+            for (iSample=0; iSample<nSample; iSample++)
             {  
-                for (iData=0; iData<nData; iData++)
+                for (iData=0; iData<NDATA; iData++)
                 {
 
-                    buf[0] = dataKey[iData];
+                    buf[0] = (char) (iData + 48);
                     spiWrite(handle, buf, count);
 
-                    for (iByte=0; iByte<nByte; iByte++)
+                    for (iByte=0; iByte<NBYTE; iByte++)
                     {
                         status = spiRead(handle, buf, count);
-                        dataUnion[iData]->bytes[iByte] = buf[0];
+                        dataOut[iData]->bytes[iByte] = buf[0];
                     }
 
-                    data[iPing][iData] = dataUnion[iData]->value;
+                    data[iSample][iData] = dataOut[iData]->value;
 
-                    //printf("test: %c, %.2f\n", dataKey[iData], dataUnion[iData]->value);
+                    printf("%.3f, ", dataOut[iData]->value);
 
                 }
-                time_sleep(0.1);
+                printf("\n");
+                time_sleep(1.0f/sampleRate);
             }
 
             spiClose(handle);
 
-            for (iPing=0; iPing<nCount; iPing++)
+            // Write data to file
+            FILE *fileOut;
+
+            fileOut = fopen("data.csv", "w+");
+
+            if (fileOut != NULL)
             {
                 
-                printf("(%d/%d): ", iPing, nCount);
+                char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
+                fprintf(fileOut, "%s\n", headerStr);
                 
-                for (iData=0; iData<nData; iData++)
+                for (iSample=0; iSample<nSample; iSample++)
                 {
-                    printf("%c%.3f, ", dataKey[iData], data[iPing][iData]);
+                    
+                    for (iData=0; iData<NDATA; iData++)
+                    {
+                        fprintf(fileOut, "%.3f, ", data[iSample][iData]);
+                    }
+
+                    fprintf(fileOut, "\n");
+
                 }
 
-                printf("\n");
+                fclose(fileOut);
 
             }
 
@@ -127,7 +154,11 @@ int main(void)
         {
             printf("SPI open failed!\n");
         }
+
         gpioTerminate();
+
     }
+
     return 0;
+
 }
