@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+#include <MPU9250.h>
 
 #include <unity.h> // Unit testing only
 
@@ -20,20 +19,11 @@ String dataOut;
 
 //----------------------------------------------------------------------------//
 
-// BME280 setup
-const uint8_t i2cAddress           = 0x76;
-const float   seaLevelPressure_hPa = 1013.25f;
-const float   Pa_to_psi            = 0.0001450380f;
-const float   m_to_ft              = 1.0f/0.3048f;
+// MPU9250 setup
+const uint8_t i2cAddress = 0x68;
+const float   magDecl    = 9.43f; // [deg]
 
-Adafruit_BME280 bme;
-
-//----------------------------------------------------------------------------//
-
-float degC_to_degF(float degC)
-{
-    return (degC*(9.0f/5.0f) + 32.0f);
-}
+MPU9250 mpu;
 
 //----------------------------------------------------------------------------//
 
@@ -46,11 +36,17 @@ void setup()
     
     UNITY_BEGIN();
 
-    if (!bme.begin(i2cAddress))
+    Wire.begin();
+
+    if (!mpu.setup(i2cAddress))
     {
         TEST_MESSAGE("Could not find a valid BME280 sensor, check wiring!");
         while (1);
     }
+
+    mpu.setMagneticDeclination(magDecl);
+    mpu.calibrateAccelGyro();
+    mpu.calibrateMag();
 
 }
 
@@ -64,11 +60,26 @@ void loop()
         
         dataOut = "";
 
-        dataOut += "Temp: "  + String(degC_to_degF(bme.readTemperature()))            + " F"   + ", ";
-        dataOut += "Press: " + String(bme.readPressure()*Pa_to_psi)                   + " psi" + ", ";
-        dataOut += "Alt: "   + String(bme.readAltitude(seaLevelPressure_hPa)*m_to_ft) + " ft"  + ", ";
-        dataOut += "Hum: "   + String(bme.readHumidity())                             + " %"   + ""  ;
+        if (mpu.update())
+        {
+            
+            dataOut += "LinAcc: ";
+            dataOut += String(mpu.getLinearAccX()) + ", ";
+            dataOut += String(mpu.getLinearAccY()) + ", ";
+            dataOut += String(mpu.getLinearAccZ()) + ", ";
 
+            dataOut += "Gyro: ";
+            dataOut += String(mpu.getGyroX()) + ", ";
+            dataOut += String(mpu.getGyroY()) + ", ";
+            dataOut += String(mpu.getGyroZ()) + ", ";
+
+            dataOut += "Euler: ";
+            dataOut += String(mpu.getEulerX()) + ", ";
+            dataOut += String(mpu.getEulerY()) + ", ";
+            dataOut += String(mpu.getEulerZ()) + ", ";
+
+        }
+        
         uint16_t len = dataOut.length() + 1;
         char     buf[len];
 
