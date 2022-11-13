@@ -30,23 +30,34 @@ MPU9250 mpu;
 void setup()
 {
 
+    Serial.begin(9600);
+
+    Serial.println("test1");
+
     iSample = 0;
     nSample = (uint16_t) runTime*sampleRate;
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
     
-    UNITY_BEGIN();
+    //UNITY_BEGIN();
 
     Wire.begin();
 
-    if (!mpu.setup(i2cAddress))
+    Serial.println("test2");
+
+    if (!mpu.setup(0x68))
     {
-        TEST_MESSAGE("Could not find a valid BME280 sensor, check wiring!");
+        //TEST_MESSAGE("Could not find a valid MPU9250 sensor, check wiring!");
+        Serial.println("Could not find a valid MPU9250 sensor, check wiring!");
         while (1);
     }
+
+    Serial.println("test3");
 
     mpu.setMagneticDeclination(magDecl);
     mpu.calibrateAccelGyro();
     mpu.calibrateMag();
+
+    Serial.println("test4");
 
 }
 
@@ -84,7 +95,9 @@ void loop()
         char     buf[len];
 
         dataOut.toCharArray(buf, len);
-        TEST_MESSAGE(buf);
+        //TEST_MESSAGE(buf);
+
+        Serial.println(dataOut);
 
         delay(nDelay);
         iSample++;
@@ -92,7 +105,7 @@ void loop()
     }
     else
     {
-        UNITY_END();
+        //UNITY_END();
     }
 
 }
