@@ -2,8 +2,6 @@
 #include <Wire.h>
 #include <MPU9250.h>
 
-#include <unity.h> // Unit testing only
-
 //----------------------------------------------------------------------------//
 
 // General setup
@@ -32,32 +30,21 @@ void setup()
 
     Serial.begin(9600);
 
-    Serial.println("test1");
-
     iSample = 0;
     nSample = (uint16_t) runTime*sampleRate;
     nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
-    
-    //UNITY_BEGIN();
 
     Wire.begin();
 
-    Serial.println("test2");
-
     if (!mpu.setup(0x68))
     {
-        //TEST_MESSAGE("Could not find a valid MPU9250 sensor, check wiring!");
         Serial.println("Could not find a valid MPU9250 sensor, check wiring!");
         while (1);
     }
 
-    Serial.println("test3");
-
     mpu.setMagneticDeclination(magDecl);
     mpu.calibrateAccelGyro();
     mpu.calibrateMag();
-
-    Serial.println("test4");
 
 }
 
@@ -95,17 +82,11 @@ void loop()
         char     buf[len];
 
         dataOut.toCharArray(buf, len);
-        //TEST_MESSAGE(buf);
-
-        Serial.println(dataOut);
+        Serial.println(dataOut);    
 
         delay(nDelay);
         iSample++;
 
-    }
-    else
-    {
-        //UNITY_END();
     }
 
 }
