@@ -36,7 +36,7 @@ void setup()
 
     Wire.begin();
 
-    if (!mpu.setup(0x68))
+    if (!mpu.setup(i2cAddress))
     {
         Serial.println("Could not find a valid MPU9250 sensor, check wiring!");
         while (1);
