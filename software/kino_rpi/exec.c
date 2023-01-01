@@ -34,7 +34,7 @@ const float sampleRate = 1.0f; // [Hz]
 
 // SPI setup
 #define NBYTE (4)
-#define NDATA (9)
+#define NDATA (18)
 
 typedef union
 {
@@ -57,8 +57,27 @@ FloatUnion dataLng;    // [deg]
 FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
-FloatUnion *dataOut[NDATA] = {&dataTime, &dataTemp, &dataPress , &dataAltPress, &dataHum,
-                              &dataLat , &dataLng , &dataAltGps, &dataSpd    };
+// MPU9250 data
+FloatUnion dataLinAccX;
+FloatUnion dataLinAccY;
+FloatUnion dataLinAccZ;
+
+FloatUnion dataGyroX;
+FloatUnion dataGyroY;
+FloatUnion dataGyroZ;
+
+FloatUnion dataEulerX;
+FloatUnion dataEulerY;
+FloatUnion dataEulerZ;
+
+FloatUnion *dataOut[NDATA] = {&dataTime,    &dataTemp,    &dataPress,   &dataAltPress, &dataHum,
+                              &dataLat,     &dataLng,     &dataAltGps,  &dataSpd,
+                              &dataLinAccX, &dataLinAccY, &dataLinAccZ,
+                              &dataGyroX,   &dataGyroY,   &dataGyroZ,
+                              &dataEulerX,  &dataEulerY,  &dataEulerZ};
+
+char headerStr[] = "dataTime,    dataTemp,    dataPress,   dataAltPress, dataHum,   dataLat,   dataLng,    dataAltGps, dataSpd, "
+                   "dataLinAccX, dataLinAccY, dataLinAccZ, dataGyroX,    dataGyroY, dataGyroZ, dataEulerX, dataEulerY, dataEulerZ";
 
 //----------------------------------------------------------------------------//
 
@@ -130,7 +149,6 @@ int main(void)
             if (fileOut != NULL)
             {
                 
-                char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd";
                 fprintf(fileOut, "%s\n", headerStr);
                 
                 for (iSample=0; iSample<nSample; iSample++)
