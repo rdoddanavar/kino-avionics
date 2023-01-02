@@ -76,8 +76,8 @@ FloatUnion *dataOut[NDATA] = {&dataTime,    &dataTemp,    &dataPress,   &dataAlt
                               &dataGyroX,   &dataGyroY,   &dataGyroZ,
                               &dataEulerX,  &dataEulerY,  &dataEulerZ};
 
-char headerStr[] = "dataTime,    dataTemp,    dataPress,   dataAltPress, dataHum,   dataLat,   dataLng,    dataAltGps, dataSpd, "
-                   "dataLinAccX, dataLinAccY, dataLinAccZ, dataGyroX,    dataGyroY, dataGyroZ, dataEulerX, dataEulerY, dataEulerZ";
+char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd, "
+                   "dataLinAccX, dataLinAccY, dataLinAccZ, dataGyroX, dataGyroY, dataGyroZ, dataEulerX, dataEulerY, dataEulerZ";
 
 //----------------------------------------------------------------------------//
 
@@ -105,7 +105,7 @@ int main(void)
 
         if (handle >= 0)
         {
-            
+
             printf("SPI open successful!\n");
 
             uint16_t nSample = 100;

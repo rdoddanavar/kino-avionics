@@ -143,11 +143,15 @@ float degC_to_degF(float degC)
 
 void init_atmos()
 {
+    
     if (!bme.begin(bmeI2C))
     {
         Serial.println("Could not find a valid BME280 sensor, check wiring!");
         while (1);
     }
+
+    Serial.println("Atmos Initialization Complete");
+
 }
 
 //----------------------------------------------------------------------------//
@@ -178,6 +182,8 @@ void init_imu()
     mpu.calibrateAccelGyro();
     mpu.calibrateMag();
 
+    Serial.println("IMU Initialization Complete");
+
 }
 
 //----------------------------------------------------------------------------//
@@ -185,17 +191,18 @@ void init_imu()
 void read_imu()
 {
 
-    dataLinAccX.value = mpu.getLinearAccX();
-    dataLinAccY.value = mpu.getLinearAccY();
-    dataLinAccZ.value = mpu.getLinearAccZ();
+    // Read MPU9250 data
+    dataLinAccX.value = 10; //mpu.getLinearAccX();
+    dataLinAccY.value = 11; //mpu.getLinearAccY();
+    dataLinAccZ.value = 12; //mpu.getLinearAccZ();
 
-    dataGyroX.value = mpu.getGyroX();
-    dataGyroY.value = mpu.getGyroY();
-    dataGyroZ.value = mpu.getGyroZ();
+    dataGyroX.value = 13; //mpu.getGyroX();
+    dataGyroY.value = 14; //mpu.getGyroY();
+    dataGyroZ.value = 15; //mpu.getGyroZ();
 
-    dataEulerX.value = mpu.getEulerX();
-    dataEulerY.value = mpu.getEulerY();
-    dataEulerZ.value = mpu.getEulerZ();
+    dataEulerX.value = 16; //mpu.getEulerX();
+    dataEulerY.value = 17; //mpu.getEulerY();
+    dataEulerZ.value = 18; //mpu.getEulerZ();
 
 }
 
@@ -204,6 +211,7 @@ void read_imu()
 void init_gps()
 {
     ss.begin(gpsBaud);
+    Serial.println("GPS Initialization Complete");
 }
 
 //----------------------------------------------------------------------------//
@@ -218,10 +226,10 @@ void read_gps()
         gps.encode(ss.read());
     }
 
-    dataLat.value    = gps.location.lat();
-    dataLng.value    = gps.location.lng();
-    dataAltGps.value = gps.altitude.feet();
-    dataSpd.value    = gps.speed.mps()*m_to_ft;
+    dataLat.value    = 6; //gps.location.lat();
+    dataLng.value    = 7; //gps.location.lng();
+    dataAltGps.value = 8; //gps.altitude.feet();
+    dataSpd.value    = 9; //gps.speed.mps()*m_to_ft;
 
 }
 
@@ -230,7 +238,8 @@ void read_gps()
 void setup()
 {
 
-    nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
+    nDelay = (uint16_t) (1.0f/sampleRate)*s_to_ms;
+    Serial.begin(9600); // Debug messages
     
     // Initialize SPI
     pinMode(MISO,OUTPUT);  // Sets MISO as OUTPUT
