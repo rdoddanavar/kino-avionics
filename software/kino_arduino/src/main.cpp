@@ -191,18 +191,23 @@ void init_imu()
 void read_imu()
 {
 
-    // Read MPU9250 data
-    dataLinAccX.value = mpu.getLinearAccX();
-    dataLinAccY.value = mpu.getLinearAccY();
-    dataLinAccZ.value = mpu.getLinearAccZ();
+    if (mpu.update())
+    {
 
-    dataGyroX.value = mpu.getGyroX();
-    dataGyroY.value = mpu.getGyroY();
-    dataGyroZ.value = mpu.getGyroZ();
+        // Read MPU9250 data
+        dataLinAccX.value = mpu.getLinearAccX();
+        dataLinAccY.value = mpu.getLinearAccY();
+        dataLinAccZ.value = mpu.getLinearAccZ();
 
-    dataEulerX.value = mpu.getEulerX();
-    dataEulerY.value = mpu.getEulerY();
-    dataEulerZ.value = mpu.getEulerZ();
+        dataGyroX.value = mpu.getGyroX();
+        dataGyroY.value = mpu.getGyroY();
+        dataGyroZ.value = mpu.getGyroZ();
+
+        dataEulerX.value = mpu.getEulerX();
+        dataEulerY.value = mpu.getEulerY();
+        dataEulerZ.value = mpu.getEulerZ();
+
+    }
 
 }
 
