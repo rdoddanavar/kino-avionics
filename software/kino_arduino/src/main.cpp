@@ -146,11 +146,11 @@ void init_atmos()
     
     if (!bme.begin(bmeI2C))
     {
-        Serial.println("Could not find a valid BME280 sensor, check wiring!");
+        Serial.println("Error: BME280 initialization");
         while (1);
     }
 
-    Serial.println("Atmos Initialization Complete");
+    Serial.println("Initialization Complete: Atmos");
 
 }
 
@@ -174,7 +174,7 @@ void init_imu()
     
     if (!mpu.setup(mpuI2C))
     {
-        Serial.println("Could not find a valid MPU9250 sensor, check wiring!");
+        Serial.println("Error: MPU9250 initialization");
         while (1);
     }
 
@@ -182,7 +182,7 @@ void init_imu()
     mpu.calibrateAccelGyro();
     mpu.calibrateMag();
 
-    Serial.println("IMU Initialization Complete");
+    Serial.println("Initialization Complete: IMU");
 
 }
 
@@ -192,17 +192,17 @@ void read_imu()
 {
 
     // Read MPU9250 data
-    dataLinAccX.value = 10; //mpu.getLinearAccX();
-    dataLinAccY.value = 11; //mpu.getLinearAccY();
-    dataLinAccZ.value = 12; //mpu.getLinearAccZ();
+    dataLinAccX.value = mpu.getLinearAccX();
+    dataLinAccY.value = mpu.getLinearAccY();
+    dataLinAccZ.value = mpu.getLinearAccZ();
 
-    dataGyroX.value = 13; //mpu.getGyroX();
-    dataGyroY.value = 14; //mpu.getGyroY();
-    dataGyroZ.value = 15; //mpu.getGyroZ();
+    dataGyroX.value = mpu.getGyroX();
+    dataGyroY.value = mpu.getGyroY();
+    dataGyroZ.value = mpu.getGyroZ();
 
-    dataEulerX.value = 16; //mpu.getEulerX();
-    dataEulerY.value = 17; //mpu.getEulerY();
-    dataEulerZ.value = 18; //mpu.getEulerZ();
+    dataEulerX.value = mpu.getEulerX();
+    dataEulerY.value = mpu.getEulerY();
+    dataEulerZ.value = mpu.getEulerZ();
 
 }
 
@@ -211,7 +211,7 @@ void read_imu()
 void init_gps()
 {
     ss.begin(gpsBaud);
-    Serial.println("GPS Initialization Complete");
+    Serial.println("Initialization Complete: GPS");
 }
 
 //----------------------------------------------------------------------------//
@@ -247,9 +247,31 @@ void setup()
     SPI.attachInterrupt(); // Activate SPI Interupt
 
     // Initialize sensors
-    init_atmos();
+    //init_atmos();
     init_imu();
     init_gps();
+
+}
+
+//----------------------------------------------------------------------------//
+
+void debug()
+{
+    
+    // Read MPU9250 data
+    Serial.print(dataLinAccX.value); Serial.print(", ");
+    Serial.print(dataLinAccY.value); Serial.print(", ");
+    Serial.print(dataLinAccZ.value); Serial.print(", ");
+
+    Serial.print(dataGyroX.value); Serial.print(", ");
+    Serial.print(dataGyroY.value); Serial.print(", ");
+    Serial.print(dataGyroZ.value); Serial.print(", ");
+
+    Serial.print(dataEulerX.value); Serial.print(", ");
+    Serial.print(dataEulerY.value); Serial.print(", ");
+    Serial.print(dataEulerZ.value);
+
+    Serial.println();
 
 }
 
@@ -261,9 +283,11 @@ void loop()
     dataTime.value = millis()/s_to_ms;
 
     // Read sensors
-    read_atmos();
+    //read_atmos();
     read_imu();
     read_gps();
+
+    debug();
 
     delay(nDelay);
 
