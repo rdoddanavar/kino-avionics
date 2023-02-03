@@ -288,7 +288,7 @@ void loop()
     dataTime.value = millis()/s_to_ms;
 
     // Read sensors
-    //read_atmos();
+    read_atmos();
     read_imu();
     read_gps();
 

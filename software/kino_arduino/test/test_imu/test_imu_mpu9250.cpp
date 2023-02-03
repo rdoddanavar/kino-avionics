@@ -54,13 +54,16 @@ void loop()
 {
 
     if (iSample < nSample)
-    {   
-        
+    {
+
         dataOut = "";
 
-        if (mpu.update())
+        if (mpu.available())
         {
-            
+
+            update_accel_gyro();
+            update_mag();
+
             dataOut += "LinAcc: ";
             dataOut += String(mpu.getLinearAccX()) + ", ";
             dataOut += String(mpu.getLinearAccY()) + ", ";
@@ -71,13 +74,13 @@ void loop()
             dataOut += String(mpu.getGyroY()) + ", ";
             dataOut += String(mpu.getGyroZ()) + ", ";
 
-            dataOut += "Euler: ";
-            dataOut += String(mpu.getEulerX()) + ", ";
-            dataOut += String(mpu.getEulerY()) + ", ";
-            dataOut += String(mpu.getEulerZ()) + ", ";
+            dataOut += "Mag: ";
+            dataOut += String(mpu.getMagX()) + ", ";
+            dataOut += String(mpu.getMagY()) + ", ";
+            dataOut += String(mpu.getMagZ());
 
         }
-        
+
         uint16_t len = dataOut.length() + 1;
         char     buf[len];
 
