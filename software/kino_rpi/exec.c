@@ -58,26 +58,26 @@ FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
 // MPU9250 data
-FloatUnion dataLinAccX;
+FloatUnion dataLinAccX; // [G]
 FloatUnion dataLinAccY;
 FloatUnion dataLinAccZ;
 
-FloatUnion dataGyroX;
+FloatUnion dataGyroX; // [deg/s]
 FloatUnion dataGyroY;
 FloatUnion dataGyroZ;
 
-FloatUnion dataEulerX;
-FloatUnion dataEulerY;
-FloatUnion dataEulerZ;
+FloatUnion dataMagX; // [mG]
+FloatUnion dataMagY;
+FloatUnion dataMagZ;
 
-FloatUnion *dataOut[NDATA] = {&dataTime,    &dataTemp,    &dataPress,   &dataAltPress, &dataHum,
-                              &dataLat,     &dataLng,     &dataAltGps,  &dataSpd,
+FloatUnion *dataOut[NDATA] = {&dataTime   , &dataTemp   , &dataPress  , &dataAltPress, &dataHum,
+                              &dataLat    , &dataLng    , &dataAltGps , &dataSpd     ,
                               &dataLinAccX, &dataLinAccY, &dataLinAccZ,
-                              &dataGyroX,   &dataGyroY,   &dataGyroZ,
-                              &dataEulerX,  &dataEulerY,  &dataEulerZ};
+                              &dataGyroX  , &dataGyroY  , &dataGyroZ  ,
+                              &dataMagX   , &dataMagY   , &dataMagZ   };
 
 char headerStr[] = "dataTime, dataTemp, dataPress, dataAltPress, dataHum, dataLat, dataLng, dataAltGps, dataSpd, "
-                   "dataLinAccX, dataLinAccY, dataLinAccZ, dataGyroX, dataGyroY, dataGyroZ, dataEulerX, dataEulerY, dataEulerZ";
+                   "dataLinAccX, dataLinAccY, dataLinAccZ, dataGyroX, dataGyroY, dataGyroZ, dataMagX, dataMagY, dataMagZ";
 
 //----------------------------------------------------------------------------//
 
