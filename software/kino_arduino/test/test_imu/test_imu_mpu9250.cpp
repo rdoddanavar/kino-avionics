@@ -61,21 +61,21 @@ void loop()
         if (mpu.available())
         {
 
-            update_accel_gyro();
-            update_mag();
+            mpu.update_accel_gyro();
+            mpu.update_mag();
 
             dataOut += "LinAcc: ";
-            dataOut += String(mpu.getLinearAccX()) + ", ";
+            dataOut += String(mpu.getLinearAccX()) + ", "; // [G]
             dataOut += String(mpu.getLinearAccY()) + ", ";
             dataOut += String(mpu.getLinearAccZ()) + ", ";
 
             dataOut += "Gyro: ";
-            dataOut += String(mpu.getGyroX()) + ", ";
+            dataOut += String(mpu.getGyroX()) + ", "; // [deg/s]
             dataOut += String(mpu.getGyroY()) + ", ";
             dataOut += String(mpu.getGyroZ()) + ", ";
 
             dataOut += "Mag: ";
-            dataOut += String(mpu.getMagX()) + ", ";
+            dataOut += String(mpu.getMagX()) + ", "; // [mG]
             dataOut += String(mpu.getMagY()) + ", ";
             dataOut += String(mpu.getMagZ());
 
