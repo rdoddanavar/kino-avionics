@@ -53,23 +53,23 @@ FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
 // MPU9250 data
-FloatUnion dataLinAccX;
+FloatUnion dataLinAccX; // [G]
 FloatUnion dataLinAccY;
 FloatUnion dataLinAccZ;
 
-FloatUnion dataGyroX;
+FloatUnion dataGyroX; // [deg/s]
 FloatUnion dataGyroY;
 FloatUnion dataGyroZ;
 
-FloatUnion dataEulerX;
-FloatUnion dataEulerY;
-FloatUnion dataEulerZ;
+FloatUnion dataMagX; // [mG]
+FloatUnion dataMagY;
+FloatUnion dataMagZ;
 
-FloatUnion *dataOut[nData] = {&dataTime,    &dataTemp,    &dataPress,   &dataAltPress, &dataHum,
-                              &dataLat,     &dataLng,     &dataAltGps,  &dataSpd,
+FloatUnion *dataOut[nData] = {&dataTime   , &dataTemp   , &dataPress  , &dataAltPress, &dataHum,
+                              &dataLat    , &dataLng    , &dataAltGps , &dataSpd     ,
                               &dataLinAccX, &dataLinAccY, &dataLinAccZ,
-                              &dataGyroX,   &dataGyroY,   &dataGyroZ,
-                              &dataEulerX,  &dataEulerY,  &dataEulerZ};
+                              &dataGyroX  , &dataGyroY  , &dataGyroZ  ,
+                              &dataMagX   , &dataMagY   , &dataMagZ   };
 
 //----------------------------------------------------------------------------//
 
@@ -191,8 +191,11 @@ void init_imu()
 void read_imu()
 {
 
-    if (mpu.update())
+    if (mpu.available())
     {
+
+        mpu.update_accel_gyro();
+        mpu.update_mag();
 
         // Read MPU9250 data
         dataLinAccX.value = mpu.getLinearAccX();
@@ -203,9 +206,9 @@ void read_imu()
         dataGyroY.value = mpu.getGyroY();
         dataGyroZ.value = mpu.getGyroZ();
 
-        dataEulerX.value = mpu.getEulerX();
-        dataEulerY.value = mpu.getEulerY();
-        dataEulerZ.value = mpu.getEulerZ();
+        dataMagX.value = mpu.getMagX();
+        dataMagY.value = mpu.getMagY();
+        dataMagZ.value = mpu.getMagZ();
 
     }
 
@@ -231,10 +234,10 @@ void read_gps()
         gps.encode(ss.read());
     }
 
-    dataLat.value    = 6; //gps.location.lat();
-    dataLng.value    = 7; //gps.location.lng();
-    dataAltGps.value = 8; //gps.altitude.feet();
-    dataSpd.value    = 9; //gps.speed.mps()*m_to_ft;
+    dataLat.value    = gps.location.lat();
+    dataLng.value    = gps.location.lng();
+    dataAltGps.value = gps.altitude.feet();
+    dataSpd.value    = gps.speed.mps()*m_to_ft;
 
 }
 
@@ -244,7 +247,7 @@ void setup()
 {
 
     nDelay = (uint16_t) (1.0f/sampleRate)*s_to_ms;
-    Serial.begin(9600); // Debug messages
+    //Serial.begin(9600); // Debug messages
     
     // Initialize SPI
     pinMode(MISO,OUTPUT);  // Sets MISO as OUTPUT
@@ -252,14 +255,14 @@ void setup()
     SPI.attachInterrupt(); // Activate SPI Interupt
 
     // Initialize sensors
-    //init_atmos();
+    init_atmos();
     init_imu();
     init_gps();
 
 }
 
 //----------------------------------------------------------------------------//
-
+/*
 void debug()
 {
     
@@ -272,14 +275,14 @@ void debug()
     Serial.print(dataGyroY.value); Serial.print(", ");
     Serial.print(dataGyroZ.value); Serial.print(", ");
 
-    Serial.print(dataEulerX.value); Serial.print(", ");
-    Serial.print(dataEulerY.value); Serial.print(", ");
-    Serial.print(dataEulerZ.value);
+    Serial.print(dataMagX.value); Serial.print(", ");
+    Serial.print(dataMagY.value); Serial.print(", ");
+    Serial.print(dataMagZ.value);
 
     Serial.println();
 
 }
-
+*/
 //----------------------------------------------------------------------------//
 
 void loop()
@@ -292,7 +295,7 @@ void loop()
     read_imu();
     read_gps();
 
-    debug();
+    //debug();
 
     delay(nDelay);
 
