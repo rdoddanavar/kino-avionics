@@ -11,6 +11,9 @@
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
+// MPU9250
+#include <MPU9250.h>
+
 //----------------------------------------------------------------------------//
 
 // General setup
@@ -25,8 +28,8 @@ uint16_t nDelay; // [ms]
 const    uint8_t keyStart = 48;
 volatile bool    spiWrite = false;
 
-const    uint8_t nByte = 4, nData = 9;
-volatile uint8_t iByte = 0, iData = 0;
+const    uint8_t nByte = 4, nData = 18;
+volatile uint8_t iByte = 0, iData =  0;
 
 typedef union
 {
@@ -49,13 +52,29 @@ FloatUnion dataLng;    // [deg]
 FloatUnion dataAltGps; // [ft]
 FloatUnion dataSpd;    // [ft/s]
 
-FloatUnion *dataOut[nData] = {&dataTime, &dataTemp,  &dataPress, &dataAltPress, &dataHum,
-                               &dataLat,  &dataLng, &dataAltGps, &dataSpd};
+// MPU9250 data
+FloatUnion dataLinAccX; // [G]
+FloatUnion dataLinAccY;
+FloatUnion dataLinAccZ;
+
+FloatUnion dataGyroX; // [deg/s]
+FloatUnion dataGyroY;
+FloatUnion dataGyroZ;
+
+FloatUnion dataMagX; // [mG]
+FloatUnion dataMagY;
+FloatUnion dataMagZ;
+
+FloatUnion *dataOut[nData] = {&dataTime   , &dataTemp   , &dataPress  , &dataAltPress, &dataHum,
+                              &dataLat    , &dataLng    , &dataAltGps , &dataSpd     ,
+                              &dataLinAccX, &dataLinAccY, &dataLinAccZ,
+                              &dataGyroX  , &dataGyroY  , &dataGyroZ  ,
+                              &dataMagX   , &dataMagY   , &dataMagZ   };
 
 //----------------------------------------------------------------------------//
 
 // BME280 setup
-const uint8_t i2cAddress           = 0x76;
+const uint8_t bmeI2C               = 0x76;
 const float   seaLevelPressure_hPa = 1013.25f;
 const float   Pa_to_psi            = 0.0001450380f;
 const float   m_to_ft              = 1.0f/0.3048f;
@@ -70,6 +89,12 @@ const uint8_t txPin = 8;
 SoftwareSerial ss(rxPin, txPin);
 
 TinyGPSPlus gps;
+
+// MPU9250 setup
+const uint8_t mpuI2C  = 0x68;
+const float   magDecl = 9.43f; // [deg]
+
+MPU9250 mpu;
 
 //----------------------------------------------------------------------------//
 
@@ -116,6 +141,21 @@ float degC_to_degF(float degC)
 
 //----------------------------------------------------------------------------//
 
+void init_atmos()
+{
+    
+    if (!bme.begin(bmeI2C))
+    {
+        Serial.println("Error: BME280 initialization");
+        while (1);
+    }
+
+    Serial.println("Initialization Complete: Atmos");
+
+}
+
+//----------------------------------------------------------------------------//
+
 void read_atmos()
 {
     
@@ -125,6 +165,61 @@ void read_atmos()
     dataAltPress.value = bme.readAltitude(seaLevelPressure_hPa)*m_to_ft;
     dataHum.value      = bme.readHumidity();
 
+}
+
+//----------------------------------------------------------------------------//
+
+void init_imu()
+{
+    
+    if (!mpu.setup(mpuI2C))
+    {
+        Serial.println("Error: MPU9250 initialization");
+        while (1);
+    }
+
+    mpu.setMagneticDeclination(magDecl);
+    mpu.calibrateAccelGyro();
+    mpu.calibrateMag();
+
+    Serial.println("Initialization Complete: IMU");
+
+}
+
+//----------------------------------------------------------------------------//
+
+void read_imu()
+{
+
+    if (mpu.available())
+    {
+
+        mpu.update_accel_gyro();
+        mpu.update_mag();
+
+        // Read MPU9250 data
+        dataLinAccX.value = mpu.getLinearAccX();
+        dataLinAccY.value = mpu.getLinearAccY();
+        dataLinAccZ.value = mpu.getLinearAccZ();
+
+        dataGyroX.value = mpu.getGyroX();
+        dataGyroY.value = mpu.getGyroY();
+        dataGyroZ.value = mpu.getGyroZ();
+
+        dataMagX.value = mpu.getMagX();
+        dataMagY.value = mpu.getMagY();
+        dataMagZ.value = mpu.getMagZ();
+
+    }
+
+}
+
+//----------------------------------------------------------------------------//
+
+void init_gps()
+{
+    ss.begin(gpsBaud);
+    Serial.println("Initialization Complete: GPS");
 }
 
 //----------------------------------------------------------------------------//
@@ -151,7 +246,8 @@ void read_gps()
 void setup()
 {
 
-    nDelay  = (uint16_t) (1.0f/sampleRate)*s_to_ms;
+    nDelay = (uint16_t) (1.0f/sampleRate)*s_to_ms;
+    //Serial.begin(9600); // Debug messages
     
     // Initialize SPI
     pinMode(MISO,OUTPUT);  // Sets MISO as OUTPUT
@@ -159,17 +255,34 @@ void setup()
     SPI.attachInterrupt(); // Activate SPI Interupt
 
     // Initialize sensors
-
-    if (!bme.begin(i2cAddress))
-    {
-        Serial.println("Could not find a valid BME280 sensor, check wiring!");
-        while (1);
-    }
-
-    ss.begin(gpsBaud);
+    init_atmos();
+    init_imu();
+    init_gps();
 
 }
 
+//----------------------------------------------------------------------------//
+/*
+void debug()
+{
+    
+    // Read MPU9250 data
+    Serial.print(dataLinAccX.value); Serial.print(", ");
+    Serial.print(dataLinAccY.value); Serial.print(", ");
+    Serial.print(dataLinAccZ.value); Serial.print(", ");
+
+    Serial.print(dataGyroX.value); Serial.print(", ");
+    Serial.print(dataGyroY.value); Serial.print(", ");
+    Serial.print(dataGyroZ.value); Serial.print(", ");
+
+    Serial.print(dataMagX.value); Serial.print(", ");
+    Serial.print(dataMagY.value); Serial.print(", ");
+    Serial.print(dataMagZ.value);
+
+    Serial.println();
+
+}
+*/
 //----------------------------------------------------------------------------//
 
 void loop()
@@ -179,7 +292,10 @@ void loop()
 
     // Read sensors
     read_atmos();
+    read_imu();
     read_gps();
+
+    //debug();
 
     delay(nDelay);
 
